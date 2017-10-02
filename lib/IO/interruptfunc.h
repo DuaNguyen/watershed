@@ -1,43 +1,152 @@
+/** @file iopin.h
+*
+* @brief This file include interrupt service routine for buttons.
+* 
+* @par
+* COPYRIGHT NOTICE: 
+*/
 #ifndef _INTFUNC_H
 #define _INTFUNC_H
+
+#ifdef __cplusplus
+extern “C” {
+#endif
+/******************************************************************************
+INCLUDES
+******************************************************************************/
 #include<mbed.h>
 #include<iopin.h>
-uint8_t mode=0;
-Timeout timeout;
-time_t time1, time2;
-InterruptIn btn_Set(set);
-InterruptIn btn_Select(select);
-bool timerOn1=true;
-bool timerOn2=true;
-void attimeout()
+/******************************************************************************
+GLOBAL VARIABLES
+******************************************************************************/
+uint8_t g_mode=0;
+Timeout g_time_out_s;
+time_t g_time_start_s;
+time_t g_time_stop_s; 
+InterruptIn g_setting_button(set);
+InterruptIn g_selecting_button(select);
+bool g_timer_on_1 = true; 
+bool g_timer_on_2 = true;
+/******************************************************************************
+* DESCRIPTION: the timeout service routine, when timeout reset mode to switch back the main menu
+* @author:
+*
+* @version: v1.0.0
+* @param:
+* NONE
+* @return: NONE
+* @see:
+* .../lib/IO/interruptfunc.h
+* @todo:
+* NONE
+* @bug:
+* NONE
+******************************************************************************/
+void set_mode_when_timeout() 
 {
-  mode=0;
+    g_mode = 0;
 }
-void btn_select()
+
+/******************************************************************************
+* DESCRIPTION: the Interrupt service routine of fall interrupt when press the select button
+* @author:
+* 
+* @version: v1.0.0
+* @param:
+* NONE
+* @return: NONE
+* @see:
+* .../lib/IO/interruptfunc.h
+* @todo:
+* NONE
+* @bug:
+* NONE
+******************************************************************************/
+static void fall_select_btn_isr()
 {
-  btn_Select.disable_irq();
-  timeout.attach(&attimeout,15);
-  wait_ms(20);
-  mode++;
-  if(mode>=3) mode=0;
-  btn_Select.enable_irq();
+    g_button_select.disable_irq();
+    g_time_out_s.attach(&set_mode_when_timeout, 15);
+    wait_ms(20);
+    g_mode++;
+    if(g_mode >= 3) 
+    {
+        g_mode=0;
+    }
+  
+    press_button.enable_irq();
 }
-void btn_set()
+/******************************************************************************
+* DESCRIPTION: the Interrupt service routine of fall interrupt when press the set button
+* @author:
+* 
+* @version: v1.0.0
+* @param:
+* NONE
+* @return: NONE
+* @see:
+* .../lib/IO/interruptfunc.h
+* @todo:
+* NONE
+* @bug:
+* NONE
+******************************************************************************/
+static void fall_set_btn_isr() 
 {
-  btn_Set.disable_irq();
-  timeout.attach(&attimeout,15);
-  wait_ms(20);
-  if(mode==1) {timerOn1=!timerOn1; time1=time(NULL);}
-  if(mode==2) {timerOn2=!timerOn2; time1=time(NULL);}
-  btn_Set.enable_irq();
+    btn_Set.disable_irq();
+    timeout.attach(&attimeout, 15);
+    wait_ms(20);
+    if(mode == 1)
+    {
+        g_timer_on_1 =! g_timer_on_1; 
+        g_time_start_s = time(NULL);
+    }
+  
+    if(mode == 2) 
+    { 
+        g_timer_on_1 =! g_timer_on_1; 
+        g_time_start_s = time(NULL);
+    }
+  
+    btn_Set.enable_irq();
 }
-void btn_press()
+/******************************************************************************
+* DESCRIPTION: the Interrupt service routine of rise interrupt when press the set button
+* @author:
+* 
+* @version: v1.0.0
+* @param:
+* NONE
+* @return: NONE
+* @see:
+* .../lib/IO/interruptfunc.h
+* @todo:
+* NONE
+* @bug:
+* NONE
+******************************************************************************/
+static void rise_set_btn_isr()
 {
-  btn_Set.disable_irq();
-  timeout.attach(&attimeout,15);
-  wait_ms(20);
-  if(mode==1||mode==2) time2=time(NULL);
-  if((time2-time1)>=2)   {set_time(0); if(mode==1) timerOn1=!timerOn1; if(mode==2) timerOn2=!timerOn2;}
-  btn_Set.enable_irq();
+    btn_Set.disable_irq();
+    timeout.attach(&attimeout, 15);
+    wait_ms(20);
+    if((mode == 1) || (mode == 2))
+    {
+        g_time_stop_s = time(NULL);
+    }
+  
+    if((g_time_stop_s - g_time_start_s) >= 2)
+    {
+        set_time(0); 
+        if(mode == 1) 
+        {
+            g_timer_on_1 =! g_timer_on_1; 
+            if(mode == 2) 
+            {
+              g_timer_on_2 =! g_timer_on_2;
+            }
+        }
+    }
+  
+    btn_Set.enable_irq();
 }
-#endif
+#endif /* _INTFUNC_H */
