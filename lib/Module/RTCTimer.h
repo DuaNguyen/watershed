@@ -1,6 +1,6 @@
 /*!
  * \file RTCTimer.h
- * \summary file chứa lớp đối tượng đồng hồ thời gian thực
+ * \summary this file consist of realtime clock classes
  * 
  * \author
  *
