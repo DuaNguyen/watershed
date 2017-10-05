@@ -1,13 +1,8 @@
 /*!
- * \file LCDController.h
- * \Lớp đối tượng màn hình
- * \Lớp đối tượng quản lý các thông tin hiển thị trên màn hình
- * \Chia màn hình hiển thị thành 3 menu
- * \author
- *
- * \date October 2017
- *
- *
+ *  File LCDController.h
+ *  This file consist of classes which use to manage content on screen
+ *  and the screen is controlled to display three separate menu
+ *  October 2017
  */
 #ifndef _LCDCONTROLLER_H_
 #define _LCDCONTROLLER_H_
