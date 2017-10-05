@@ -1,4 +1,4 @@
-/*! file chứa chương trình chính
+/*
 * Functional testing: reading current value, voltage value, power value from INA module,  
 * time update, display content on screen, press button to go next screen, reset timer.
 */
