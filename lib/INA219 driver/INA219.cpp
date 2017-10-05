@@ -75,7 +75,7 @@ void INA219::calibrate_16v_400mA()
     current_divider = 20;
     power_divider = 1;
 }
-void INA219::calibrate_32v_3200A()
+void INA219::calibrate_32v_3200mA()
 {
   // ASSUMING A 0.1 OHM RESISTOR!
   write_register_u16(INA219_REG_CALIBRATION, 8192);

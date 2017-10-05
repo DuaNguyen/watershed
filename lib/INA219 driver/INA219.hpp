@@ -109,7 +109,7 @@ public:
      *
      */
     void calibrate_16v_400mA();
-    void calibrate_32v_3200A();
+    void calibrate_32v_3200mA();
 
 protected:
     resolution_t resolution;
