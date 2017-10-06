@@ -1,26 +1,33 @@
 /*!
  * \file RTCTimer.h
- * \summary this file consist of realtime clock classes
- * 
- * \author
+ * \date 2017/10/06 
  *
- * \date October 2017
+ * \author 
+ * Contact: 
  *
+ * \brief Class for controlling real-time clock
  *
- */
+ * TODO: long description
+ *
+ * \note
+*/
+
+
 #ifndef _RTCTIMER_H_
 #define _RTCTIMER_H_
 #include <mbed.h>
+
 class RTC_Timer{
 public:
-    /*Constructor khởi tạo đối tượng đồng hồ thời gian thực*/
-    RTC_Timer() :
+    
+    RTC_Timer() : /*Constructor for real-time clock object*/
 	timer_state(false), second(0), minute(0), hour(0), day(0)
     {
         set_time(0);
     }
-    /*Phương thức reset đồng hồ*/
-    void Reset()
+
+
+	void Reset() /*Reset clock to zero*/
     {
         timer_state = true;
         set_time(0);
@@ -30,36 +37,40 @@ public:
         day = 0;
     }
 
-    void Off()
+
+	void Off() /*Disable clock but still hold it's value*/
     {
         timer_state = false;
     }
 
-    void On()
+
+	void On() /*Resume clock*/
     {
         timer_state = true;
     }
-	
-    void ChangeState()
+
+
+	void ChangeState() /*Toggle clock's state*/
     {
         timer_state = !timer_state;
     }
 
-    bool GetState()
+   
+	bool GetState()	/*Get clock's state*/
     {
         return timer_state;
     }
 	
-    void Update()
+	void Update()	/*Update timer*/
     {
         /* Update timer*/
-        seconds = time(NULL); /*TODO: bo sung header cho ham time */
+        seconds = time(NULL); 
         second = seconds % 60;
         minute = seconds % 3600 / 60;
         hour = seconds % 86400 / 3600;
     }
 
-    int GetSecond()
+	int GetSecond() 
     {
         return second;
     }
