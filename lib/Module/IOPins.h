@@ -1,3 +1,17 @@
+/*!
+ * \file IOPins.h
+ * \date 2017/10/06 
+ *
+ * \author 
+ * Contact: 
+ *
+ * \brief Contains IO Pins map using for the demo
+ *
+ * TODO: long description
+ *
+ * \note
+*/
+
 #ifndef _IOPIN_H_
 #define _IOPIN_H_
 

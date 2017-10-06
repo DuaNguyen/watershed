@@ -1,7 +1,6 @@
 /*!
  * \file var.h
- * \summary file khai báo các driver của phần cứng, các biến phần cứng toàn cục,
- * và các biến trạng thái của hệ thống.
+ * \summary define global, hardware's statuses variable
  *
  * \author
  *
@@ -13,12 +12,13 @@
 #define _VAR_H_
 #define INA219_measure_battery_addr 0x40
 #define INA219_measure_pv_addr 0x41
-#include <Adafruit_SSD1306.h>
-#include <INA219.hpp>
-#include <IOPins.h>
+
+#include <Adafruit_SSD1306.h> 
+#include <INA219.hpp>	
+#include <IOPins.h>	
 #include <RTCTimer.h>
-/*GLOBAL VARIBLES*/
-/* an I2C sub-class that provides a constructed default */
+
+/* an I2C-inherited class that provides a constructed default */
 class I2CPreInit : public I2C
 {
 public:
@@ -29,9 +29,11 @@ public:
     };
 };
 I2CPreInit g_I2C_object(I2C_SDA, I2C_SCL);
-/*đối tượng màn hình oled*/
-Adafruit_SSD1306_I2c g_lcd_object(g_I2C_object, NC);
-/*đối tượng cảm biến đo dòng điện INA*/
-INA219 g_battery_measure_object(I2C_SDA, I2C_SCL, INA219_measure_battery_addr);
-INA219 g_pv_measure_object(I2C_SDA, I2C_SCL, INA219_measure_pv_addr);
+
+Adafruit_SSD1306_I2c g_lcd_object(g_I2C_object, NC);  /* LCD object*/
+
+
+
+INA219 g_battery_measure_object(I2C_SDA, I2C_SCL, INA219_measure_battery_addr); /*INA current sensors object for battery*/
+INA219 g_pv_measure_object(I2C_SDA, I2C_SCL, INA219_measure_pv_addr);		/*INA current sensors object for solar panel*/
 #endif /*_VAR_H_*/

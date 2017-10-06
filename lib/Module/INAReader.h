@@ -1,23 +1,16 @@
-/******************************************************************************
- * 
- * Copyright (c) October 2017,
- *
- *
- *****************************************************************************/
+
 /**
  * @file INAReader.h
  * @author 
  * @brief Configuration and Reading data from INA module, uses the hadware I2C available 
  * 	  in the Maple to interact with I2C slave (INA module).
  */
-/*
- * Library created to use with ARM cores.
- * users easy interaction with the I2C Hardware in a familiar method.
- */
+
 
 #ifndef _INAREADER_H_
 #define _INAREADER_H_
 #include <var.h>
+
 /** Class for configuration and Reading data from INA module  */
 class INAReader{
 public:

@@ -1,13 +1,24 @@
 /*!
- *  File LCDController.h
- *  This file consist of classes which use to manage content on screen
- *  and the screen is controlled to display three separate menu
- *  October 2017
- */
+ * \file LCDController.h
+ * \date 2017/10/06 9:30
+ *
+ * \author 
+ * Contact: 
+ *
+ * \brief This file consist of classes which use to manage content on screen
+ *
+ * TODO: 
+ *
+ * \note
+*/
+
 #ifndef _LCDCONTROLLER_H_
 #define _LCDCONTROLLER_H_
+
 #include <Adafruit_SSD1306.h>
 #include <logo.h>
+
+
 class LCDController
 {
 public:
@@ -45,9 +56,9 @@ public:
     void setBattPower(float value);
     /*update battery energy value to display */
     void setBattEnergy(float value);
-    /*Change content on screen */
+    /*change content on screen */
     void  updateScreen(uint8_t screen_index);
-    /*setting timer value*/
+    /*set timer value*/
     void setTime(uint8_t _hour, uint8_t _minute, uint8_t _second);
 
 private:
