@@ -1,19 +1,42 @@
-
+/******************************************************************************
+ *
+ * Copyright (c) October 2017,
+ *
+ *
+ *****************************************************************************/
 /**
  * @file INAReader.h
- * @author 
- * @brief Configuration and Reading data from INA module, uses the hadware I2C available 
+ * @author
+ * @brief Configuration and Reading data from INA module, uses the hadware I2C available
  * 	  in the Maple to interact with I2C slave (INA module).
  */
-
+/* TODO: long comment
+ * Library created to use with ARM cores.
+ * users easy interaction with the I2C Hardware in a familiar method.
+ */
 
 #ifndef _INAREADER_H_
 #define _INAREADER_H_
-#include <var.h>
+#include <INA219.hpp>
+/** \addtogroup Module */
 
-/** Class for configuration and Reading data from INA module  */
-class INAReader{
+/** Class for configuration and Reading data from INA module
+ *
+ *
+ * Example:
+ * @code
+ * TODO: Example code
+ * @endcode
+ * @ingroup module
+ */
+class INAReader: private INA219{
 public:
+    /**
+    *@param current_out_of_range alarm when current out of range
+    *@param voltage_out_of_range alarm when voltage out of range
+    */
+    bool current_out_of_range;
+    bool voltage_out_of_range;
     //************************************
     //@brief Construct a new INAReader instance.
     // Method:    INAReader::INAReader
@@ -22,11 +45,14 @@ public:
     // Returns:
     // Qualifier:
     //***********************************
-    INAReader(INA219* batt_INA_ptr, INA219* pv_INA_ptr)
+    INAReader(PinName sda, PinName scl, int addr=0x40, int freq=100000, resolution_t res=RES_12BITS):
+    INA219(sda, scl, addr, freq, res)
     {
-        INA_batmeasure_object_ptr = batt_INA_ptr;
-        INA_pvmeasure_object_ptr = pv_INA_ptr;
-	Calibration();
+        volt = 0;
+        curr = 0;
+        power = 0;
+        max_current = 0;
+        max_voltage = 0;
     }
     /**
     *@brief
@@ -34,47 +60,198 @@ public:
 	            This will depend on voltage input from PV
     *@param pv_curr PV Current value is read from INA module
 	            This will depend on current input from PV
-    *@param pv_power Power value of PV that is measured by INA module 
+    *@param pv_power Power value of PV that is measured by INA module
     *@param battery_volt batterry Voltage value  is read from INA module
-	             This will depend on batterry voltage 
+	             This will depend on batterry voltage
     *@param battery_curr batterry Current value is read from INA module
 	             This will depend on batterry current
-    *@param battery_power Batterry power value is measured by INA module 
+    *@param battery_power Batterry power value is measured by INA module
+    */
     /*
     Adjust measurement range
     */
-void Calibration();
+    void Calibrate(float _shunt_value, float _max_current, float _max_voltage);
     /*
     Reading voltage value and current value from INA module
     */
     void Scan();
-    float getBattVolt();
-    float getBattCurr();
-    float getBattPower();
-    float getPVVolt();
-    float getPVCurr();
-    float getPVPower();
+    float GetVolt();
+    float GetCurr();
+    float GetPower();
 private:
-    INA219* INA_batmeasure_object_ptr;
-    INA219* INA_pvmeasure_object_ptr;
-    float pv_volt;
-    float pv_curr;
-    float pv_power;
-    float battery_volt;
-    float battery_curr;
-    float battery_power;
+    float volt;
+    float curr;
+    float power;
+    float max_current;
+    float max_voltage;
+    float current_lsb;
+    float power_lsb;
+    float voltage_lsb;
+    /** Reads the current raw value of current from the INA219.
+     *
+     *  @see read_current_mA
+     *
+     *  @returns
+     *      A value between -32768 and +32768. Depending on the current calibration and configuration register values, the corresponding current can be calculated.
+     */
+    int16_t read_current_raw();
+    /** Reads the current from the INA219 and calculates the actual value in mA.
+     *
+     *  @see read_current_raw
+     *
+     *  @returns
+     *      A floating point value corresponding to the current flowing through the current shunt, in mA.
+     */
+    float read_current_mA();
+
+    /** Reads the raw power value from the INA219.
+     *
+     *  @see read_power_mW
+     *
+     *  @returns
+     *      A value between -32768 and +32768. Depending on the calibration and configuration register values, the actual power can be calculated.
+     */
+    int16_t read_power_raw();
+    /** Reads the power from the INA219 and calculates the actual value in mW.
+     *
+     *  @see read_power_raw
+     *
+     *  @returns
+     *      A floating point value corresponding to the power being used in the circuit, in mW.
+     */
+    float read_power_mW();
+    /** Reads the raw bus voltage.
+     *
+     *  @see read_bus_voltage
+     *
+     *  @returns
+     *      A value between -32768 and +32768 corresponding to the bus voltage.
+     */
+    int16_t read_bus_voltage_raw();
+    /** Reads the bus voltage and uses it to calculate the actual bus voltage.
+     *
+     *  @see read_bus_voltage_raw
+     *
+     *  @returns
+     *      A floating point value corresponding to the voltage of V+ (in V).
+     */
+    float read_bus_voltage();
+
 };
     //************************************
     // Method:    INAReader::Calibration
-    // Description:  Adjust measurement range 
+    // Description:  Adjust measurement range
     // Access:    public
-    // Returns: 
-    // Qualifier: 
+    // Returns:
+    // Qualifier:
     //***********************************
-void INAReader::Calibration()
+void INAReader::Calibrate(float _shunt_value, float _max_current, float _max_voltage)
 {
-    INA_batmeasure_object_ptr -> calibrate_32v_3200mA();
-    INA_pvmeasure_object_ptr -> calibrate_32v_3200mA();
+    uint16_t calibrating_value;
+    current_lsb = (_max_current * 1000) / 32000;
+    calibrating_value = (uint16_t) 40.96 / (current_lsb * _shunt_value);
+    /*write calibrating_value to calibration register*/
+    write_register_u16(INA219_REG_CALIBRATION, calibrating_value);
+    /*write to config register*/
+    uint16_t resolution_mask = 0x0000;
+
+    if (resolution == RES_12BITS)
+        resolution_mask = INA219_CONFIG_BADCRES_12BIT | INA219_CONFIG_SADCRES_12BIT_1S_532US;
+    else if (resolution == RES_11BITS)
+        resolution_mask = INA219_CONFIG_BADCRES_11BIT | INA219_CONFIG_SADCRES_11BIT_1S_276US;
+    else if (resolution == RES_10BITS)
+        resolution_mask = INA219_CONFIG_BADCRES_10BIT | INA219_CONFIG_SADCRES_10BIT_1S_148US;
+    else // resolution == RES_9BITS
+        resolution_mask = INA219_CONFIG_BADCRES_9BIT | INA219_CONFIG_SADCRES_9BIT_1S_84US;
+    if(_max_voltage < 16)
+    {
+        write_register_u16(INA219_REG_CONFIG, INA219_CONFIG_BVOLTAGERANGE_16V |
+                           INA219_CONFIG_GAIN_8_320MV |
+                           resolution_mask |
+                           INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS);
+    }
+    else
+    {
+        write_register_u16(INA219_REG_CONFIG, INA219_CONFIG_BVOLTAGERANGE_32V |
+                           INA219_CONFIG_GAIN_8_320MV |
+                           resolution_mask |
+                           INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS);
+    }
+    /* Set power_lsb */
+    power_lsb = 20* current_lsb;
+    voltage_lsb = 4;
+    max_current = _max_current;
+    max_voltage = _max_voltage;
+}
+/** Reads the current raw value of current from the INA219.
+ *
+ *  @see read_current_mA
+ *
+ *  @returns
+ *      A value between -32768 and +32768. Depending on the current calibration and configuration register values, the corresponding current can be calculated.
+ */
+int16_t INAReader::read_current_raw()
+{
+    return (int16_t)read_register_u16(INA219_REG_CURRENT);
+}
+/** Reads the current from the INA219 and calculates the actual value in mA.
+ *
+ *  @see read_current_raw
+ *
+ *  @returns
+ *      A floating point value corresponding to the current flowing through the current shunt, in mA.
+ */
+float INAReader::read_current_mA()
+{
+    float raw_current = read_current_raw();
+    return raw_current * current_lsb;
+}
+
+/** Reads the raw power value from the INA219.
+ *
+ *  @see read_power_mW
+ *
+ *  @returns
+ *      A value between -32768 and +32768. Depending on the calibration and configuration register values, the actual power can be calculated.
+ */
+int16_t INAReader::read_power_raw()
+{
+    return (int16_t)read_register_u16(INA219_REG_POWER);
+}
+/** Reads the power from the INA219 and calculates the actual value in mW.
+ *
+ *  @see read_power_raw
+ *
+ *  @returns
+ *      A floating point value corresponding to the power being used in the circuit, in mW.
+ */
+float INAReader::read_power_mW()
+{
+    float raw_power = read_power_raw();
+    return raw_power * power_lsb;
+}
+/** Reads the raw bus voltage.
+ *
+ *  @see read_bus_voltage
+ *
+ *  @returns
+ *      A value between -32768 and +32768 corresponding to the bus voltage.
+ */
+int16_t INAReader::read_bus_voltage_raw()
+{
+    return (int16_t)read_register_u16(INA219_REG_BUSVOLTAGE)>>3;
+}
+/** Reads the bus voltage and uses it to calculate the actual bus voltage.
+ *
+ *  @see read_bus_voltage_raw
+ *
+ *  @returns
+ *      A floating point value corresponding to the voltage of V+ (in V).
+ */
+float INAReader::read_bus_voltage()
+{
+    float raw_volt = read_bus_voltage_raw();
+    return raw_volt * voltage_lsb;
 }
     //************************************
     // Method:    INAReader::Scan
@@ -85,77 +262,58 @@ void INAReader::Calibration()
     //***********************************
 void INAReader::Scan()
 {
-    pv_volt = INA_pvmeasure_object_ptr -> read_bus_voltage();
-    pv_curr = INA_pvmeasure_object_ptr -> read_current_mA();
-    pv_power = INA_pvmeasure_object_ptr -> read_power_mW();
-    battery_volt = INA_batmeasure_object_ptr -> read_bus_voltage();
-    battery_curr = INA_batmeasure_object_ptr -> read_current_mA();
-    battery_power = INA_batmeasure_object_ptr -> read_power_mW();
+    volt = read_bus_voltage();
+    curr = read_current_mA();
+    power = read_power_mW();
+    if ( volt >= max_voltage )
+    {
+        voltage_out_of_range = true;
+    }
+    else
+    {
+        voltage_out_of_range = false;
+    }
+    if ( curr >= max_current )
+    {
+        current_out_of_range = true;
+    }
+    else
+    {
+        current_out_of_range = false;
+    }
 }
+
     //************************************
-    // Method:    INAReader::getBattVolt
-    // Description:    Reading battery voltage value
-    // Access:    public
-    // Returns:    battery_volt
-    // Qualifier:
-    //***********************************
-float INAReader::getBattVolt()
-{
-    return battery_volt;
-}
-    //************************************
-    // Method:    INAReader::getBattCurr
-    // Description:     Reading battery current value
-    // Access:    public
-    // Returns:    battery_curr
-    // Qualifier:
-    //***********************************
-float INAReader::getBattCurr()
-{
-    return battery_curr;
-}
-    //************************************
-    // Method:    INAReader::getBattPower
-    // Description:    Reading battery energy value
-    // Access:    public
-    // Returns:    battery_power
-    // Qualifier:
-    //***********************************
-float INAReader::getBattPower()
-{
-    return battery_power;
-}
-    //************************************
-    // Method:    INAReader::getPVVolt
+    // Method:    INAReader::GetPVVolt
     // Description:    Reading PV voltage value
     // Access:    public
     // Returns:    pv_volt
     // Qualifier:
     //***********************************
-float INAReader::getPVVolt()
+float INAReader::GetVolt()
 {
-    return pv_volt;
+    return volt;
 }
     //************************************
-    // Method:    INAReader::getPVCurr
+    // Method:    INAReader::GetPVCurr
     // Description:    Reading PV current value
     // Access:    public
     // Returns:    pv_curr
     // Qualifier:
     //***********************************
-float INAReader::getPVCurr()
+float INAReader::GetCurr()
 {
-    return pv_curr;
+    return curr;
 }
     //************************************
-    // Method:    INAReader::getPVPower
+    // Method:    INAReader::GetPVPower
     // Description:    Reading PV current value
     // Access:    public
     // Returns: pv_power
     // Qualifier:
     //***********************************
-float INAReader::getPVPower()
+float INAReader::GetPower()
 {
-    return pv_power;
+    return power;
 }
 #endif /*_INAREADER_H_*/

@@ -1,13 +1,13 @@
 /*!
  * \file LCDController.h
  * \date 2017/10/06 9:30
- *
- * \author 
- * Contact: 
+ * TODO: long description, Example, edit
+ * \author
+ * Contact:
  *
  * \brief This file consist of classes which use to manage content on screen
  *
- * TODO: 
+ * TODO:
  *
  * \note
 */
@@ -191,7 +191,7 @@ void LCDController::setTime(uint8_t _hour, uint8_t _minute, uint8_t _second)
 }
     //************************************
     // Method:    LCDController::updateScreen
-    // Description:    change menu screen 
+    // Description:    change menu screen
     // Access:    public
     // Returns:
     // Qualifier:

@@ -1,21 +1,20 @@
 /*!
  * \file main.cpp
- * \date 2017/10/06 
+ * \date 2017/10/06
  *
- * \author 
- * Contact: 
+ * \author
+ * Contact:
  *
- * \brief 
+ * \brief
  *
- * TODO: long description
+ * TODO: long description, edit code
  *
  * \note
 */
 
 
 #include <mbed.h>
-#include <var.h>      /*Store global variable for interacting with hardware*/
-#include <LCDController.h> 
+#include <LCDController.h>
 #include <INAReader.h>
 #include <RTCTimer.h>
 #include <KeyboardController.h>
@@ -39,7 +38,7 @@ int main() {
 	/*Wait for 3 seconds*/
     wait(3);
 
-    while(true) 
+    while(true)
     {
         /*Read values from INA modules*/
         ina_reader.Scan();
