@@ -7,55 +7,53 @@
  *
  * \brief
  *
- * TODO: long description, edit code
+ * TODO: long description
+ * Functional testing: reading current value, voltage value, power value from INA module,
+ * time update, display content on screen, press button to go next screen, reSet timer.
  *
  * \note
 */
 
-
+#include <IOPins.h>
 #include <mbed.h>
 #include <LCDController.h>
 #include <INAReader.h>
 #include <RTCTimer.h>
 #include <KeyboardController.h>
-
 /*initialization lcd object*/
-LCDController lcdcontroller(&g_lcd_object);
-
+I2CPreInit i2c_object(I2C_SDA, I2C_SCL);
+LCDController lcdcontroller(i2c_object);
 /*initialization current, voltage measuring object*/
-INAReader ina_reader(&g_battery_measure_object, &g_pv_measure_object);
-
+INAReader battery_measurement(I2C_SDA, I2C_SCL, 0x40);
+INAReader pv_measurement(I2C_SDA, I2C_SCL, 0x41);
 /*initialization keyboard object*/
 KeyboardController keyboard(SELECT_BUTTON_PIN, SET_BUTTON_PIN, INVERTER_ON_PIN);
-
-/*initialization realtime clock object*/
+/*initialization realtime clock object */
 RTC_Timer rtc_timer;
-
 int main() {
     /*Display logo watershed on screen*/
-    lcdcontroller.showLogo();
-
-	/*Wait for 3 seconds*/
+    lcdcontroller.ShowLogo();
+    /*calibrate ina219 with 0.1 ohm Shunt, max current 3.2A, max voltage 32V*/
+    battery_measurement.Calibrate(0.1, 3.2, 32);
+    pv_measurement.Calibrate(0.1, 3.2, 32);
+    /*Wait for 3 seconds*/
     wait(3);
-
     while(true)
     {
-        /*Read values from INA modules*/
-        ina_reader.Scan();
-
-        /*Update realtime clock*/
+        /*Reading values from INA module*/
+        battery_measurement.Scan();
+        pv_measurement.Scan();
+        /*updating realtime clock*/
         rtc_timer.Update();
-
-        /*Update properties of lcd object*/
-        lcdcontroller.setBattVolt(ina_reader.getBattVolt());
-        lcdcontroller.setBattCurr(ina_reader.getBattCurr());
-        lcdcontroller.setBattPower(ina_reader.getBattPower());
-        lcdcontroller.setPVVolt(ina_reader.getPVVolt());
-        lcdcontroller.setPVCurr(ina_reader.getPVCurr());
-        lcdcontroller.setPVPower(ina_reader.getPVPower());
-        lcdcontroller.setTime(rtc_timer.GetHour(), rtc_timer.GetMinute(), rtc_timer.GetSecond());
-
-        /*Update LCD screen with menu index*/
-        lcdcontroller.updateScreen(keyboard.menu_index);
+        /*updating properties of lcd object */
+        lcdcontroller.SetBattVolt(battery_measurement.GetVolt());
+        lcdcontroller.SetBattCurr(battery_measurement.GetCurr());
+        lcdcontroller.SetBattPower(battery_measurement.GetPower());
+        lcdcontroller.SetPVVolt(pv_measurement.GetVolt());
+        lcdcontroller.SetPVCurr(pv_measurement.GetCurr());
+        lcdcontroller.SetPVPower(pv_measurement.GetPower());
+        lcdcontroller.SetTime(rtc_timer.GetHour(), rtc_timer.GetMinute(), rtc_timer.GetSecond());
+        /*selecting screen to display*/
+        lcdcontroller.UpdateScreen(keyboard.menu_index);
     }
 }

@@ -1,9 +1,9 @@
 /*!
  * \file IOPins.h
- * \date 2017/10/06 
+ * \date 2017/10/06
  *
- * \author 
- * Contact: 
+ * \author
+ * Contact:
  *
  * \brief Contains IO Pins map using for the demo
  *
@@ -14,19 +14,20 @@
 
 #ifndef _IOPIN_H_
 #define _IOPIN_H_
-
-/*USB pins*/
-#define USB_DM PA_11
-#define USB_DP PA_12
-#define USB_NOE PA_13
-/*I2C*/
-#define I2C_SCL PB_6
-#define I2C_SDA PB_7
-/*SPI for SDIO interface*/
-#define SPI_MOSI PB_5
-#define SPI_MISO PB_4
-#define SPI_SCK PB_3
-#define SPI_CS PA_11
+/*
+*  USB pins:
+*  USB_DM = PA_11
+*  USB_DP = PA_12
+*  USB_NOE = PA_13
+*  I2C:
+*  I2C_SCL = PB_6
+*  I2C_SDA = PB_7
+*  SPI for SDIO interface:
+*  SPI_MOSI = PB_5
+*  SPI_MISO = PB_4
+*  SPI_SCK = PB_3
+*  SPI_CS = PA_11
+*/
 /*Button Inputs*/
 #define SELECT_BUTTON_PIN PB_0
 #define SET_BUTTON_PIN PB_1
