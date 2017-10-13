@@ -1,11 +1,11 @@
 /******************************************************************************
  * @file    INAReader.h
- * @author
+ * @author   Dua Nguyen
  * @brief    Configuration and Reading data from INA module, uses the hardware I2C
- * 	     available in the Maple to interact with I2C slave (INA module).
+ * 	         available in the Maple to interact with I2C slave (INA module).
  * @date     Oct. 2017
  * @date modified 2017/10/13
- * @version
+ * @version 1.0.0
  * Copyright(C) 2017
  * All rights reserved.
  *
@@ -18,8 +18,8 @@
   *Actors : user
   *Triggers:  The user set measurement range
   *Main course :  1.The system reads  _shunt_value, _max_current, _max_voltage value
-  *	         2. Changing calibration register value according to max current value and shunt resistor value.
-  *		 3. choosing voltage range (16Volt or 32 Volt) from max voltage value
+  *	              2. Changing calibration register value according to max current value and shunt resistor value.
+  *		             3. choosing voltage range (16Volt or 32 Volt) from max voltage value
   *Exceptions:  _shunt_value, _max_current value or _max_voltage value is out of permissive range.
   */
  /*Use case
@@ -90,9 +90,15 @@ public:
     bool voltage_out_of_range;
     /************************************
     * @brief Construct a new INAReader instance.
-    * Method:    INAReader::INAReader
-    * Description:   INAReader constructor
-    * Access:    public
+    * Method: INAReader::INAReader
+    * @brief: INAReader constructor
+    * Description: initialized INAReader object
+    * @param sda data pin of i2c communication
+    * @param scl clock pin of i2c communication
+    * @param addr INA219 i2c address
+    * @param freq i2c frequency communication
+    * @param res INA219 ADC resolution
+    * Access: public
     * Returns:
     * Qualifier:
     ***********************************/
@@ -105,29 +111,49 @@ public:
         max_current = 0;
         max_voltage = 0;
     }
-    /**
-    *@brief
-    *@param volt Voltage value is read from INA module
-	            This will depend on bus voltage (V+ pin) of INA219
-    *@param curr Current value is read from INA module
-	            This will depend on current through the shunt resistor
-    *@param power Power value of PV that is measured by INA module
-    *@param max_current the maximum of current set by operator
-    *@param max_voltage the maximum of voltage set by operator
-    *@param current_lsb the minimum current value that INA219 can sense in mA, to calculate the actual current value
-    *@param voltage_lsb the minimum voltage value that INA219 can sense in mV, to calculate the actual voltage value
-    *@param power_lsb  the minimum power value that INA219 can sense in mW, to calculate the actual power value
-    * Adjust measurement range
-    */
+
+    /************************************
+    * Method: INAReader::Calibrate
+    * Description: Calibrating INA219 according to shunt resistor value, max current value, max voltage value
+    * @brief: INA219 Calibration
+    * @param _shunt_value shunt resistor value
+    * @param _max_current max current value that is set by user
+    * @param _max_voltage max voltage value that is set by user
+    * Access: public
+    * Returns:
+    * Qualifier:
+    * @Date modified 2017/10/13
+    * @author Dua Nguyen
+    * Exceptions:
+    * 1. Setting max current value or max voltage value out of range
+    *  Max current value of system equal 320/(shunt resistor value) mA
+    *  Max current value (unit: Ampere) set by user have to in persissive range ( smaller than max current  of system)
+    * @TODO show a notification for user when user compile
+    ***********************************/
     void Calibrate(float _shunt_value, float _max_current, float _max_voltage);
     /*
-    Reading voltage value and current value from INA module
+    *Reading voltage value, current value and power value from INA module
+    *Exceptions: 1.when measurement value out of permissive range. the display always show max value
+    *@TODO show to user a notification by a text on LCD
     */
     void Scan();
     float GetVolt();
     float GetCurr();
     float GetPower();
 private:
+   /**
+   *@brief
+   *@param volt Voltage value is read from INA module
+           This will depend on bus voltage (V+ pin) of INA219
+   *@param curr Current value is read from INA module
+           This will depend on current through the shunt resistor
+   *@param power Power value of PV that is measured by INA module
+   *@param max_current the maximum of current set by operator
+   *@param max_voltage the maximum of voltage set by operator
+   *@param current_lsb the minimum current value that INA219 can sense in mA, to calculate the actual current value
+   *@param voltage_lsb the minimum voltage value that INA219 can sense in mV, to calculate the actual voltage value
+   *@param power_lsb  the minimum power value that INA219 can sense in mW, to calculate the actual power value
+   */
     float volt;
     float curr;
     float power;
@@ -188,9 +214,9 @@ private:
 
 };
    /************************************
-    * Method:    INAReader::Calibration
-    * Description:  Adjust measurement range
-    * Access:    public
+    * Method: INAReader::Calibration
+    * Description: Adjust measurement range
+    * Access: public
     * Returns:
     * Qualifier:
     ***********************************/
@@ -336,7 +362,7 @@ void INAReader::Scan()
     * Method:    INAReader::GetPVVolt
     * Description:    Reading PV voltage value
     * Access:    public
-    * Returns:    pv_volt
+    * Returns:    voltage
     * Qualifier:
     ***********************************/
 float INAReader::GetVolt()
@@ -347,7 +373,7 @@ float INAReader::GetVolt()
     * Method:    INAReader::GetPVCurr
     * Description:    Reading PV current value
     * Access:    public
-    * Returns:    pv_curr
+    * Returns:   current
     * Qualifier:
     ***********************************/
 float INAReader::GetCurr()
@@ -358,7 +384,7 @@ float INAReader::GetCurr()
     * Method:    INAReader::GetPVPower
     * Description:    Reading PV current value
     * Access:    public
-    * Returns: pv_power
+    * Returns:    power
     * Qualifier:
     ***********************************/
 float INAReader::GetPower()
