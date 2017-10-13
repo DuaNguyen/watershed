@@ -1,31 +1,82 @@
 /******************************************************************************
- *
- * Copyright (c) October 2017,
- *
+ * @file    INAReader.h
+ * @author
+ * @brief    Configuration and Reading data from INA module, uses the hardware I2C
+ * 	     available in the Maple to interact with I2C slave (INA module).
+ * @date     Oct. 2017
+ * @date modified 2017/10/13
+ * @version
+ * Copyright(C) 2017
+ * All rights reserved.
  *
  *****************************************************************************/
-/**
- * @file INAReader.h
- * @author
- * @brief Configuration and Reading data from INA module, uses the hadware I2C available
- * 	  in the Maple to interact with I2C slave (INA module).
+ /*Use case
+  *Name : Calibration
+  *ID : 01
+  *Description : when user want to change shunt resistor value, range current and voltage
+  *              measurement to match with desiring range.
+  *Actors : user
+  *Triggers:  The user set measurement range
+  *Main course :  1.The system reads  _shunt_value, _max_current, _max_voltage value
+  *	         2. Changing calibration register value according to max current value and shunt resistor value.
+  *		 3. choosing voltage range (16Volt or 32 Volt) from max voltage value
+  *Exceptions:  _shunt_value, _max_current value or _max_voltage value is out of permissive range.
+  */
+ /*Use case
+  *Name : Getting current value, voltage value and power value
+  *ID : 02
+  *Description : User wanna get current value, voltage value and power value from the INA219 module
+  *Actors : user
+  *Triggers:  The user call the function
+  *Main course :  The system reads  _shunt_value, _max_current, _max_voltage value
+  *		 from corresponding register of INA219.
+ *Exceptions:  INA219 module is not connected.
  */
-/* TODO: long comment
- * Library created to use with ARM cores.
- * users easy interaction with the I2C Hardware in a familiar method.
- */
-
 #ifndef _INAREADER_H_
 #define _INAREADER_H_
 #include <INA219.hpp>
-/** \addtogroup Module */
 
-/** Class for configuration and Reading data from INA module
- *
- *
+/* Class for configuration and Reading data from INA module
+ * If this source file built with example, the <mbed.h> and <INAReader> library
+ * must be included
+ */
+/*
  * Example:
  * @code
- * TODO: Example code
+ * calibration, reading current, voltage and power
+ * #include <mbed.h>
+ * #include <INAReader>
+ * // I2C address of INA219 = 0x40
+ * INAReader measurement_object(I2C_SDA, I2C_SCL, 0x40);
+ *
+ * int main() {
+ *     float volt_mV;
+ *     float curr_mA;
+ *     float power_mW;
+ *     //calibrating with shunt resistor 0.1 ohm, max current 3.2A, max voltage 16V
+ *     measurement_object.calibrate(0.1, 3.2, 16);
+ *     while(1) {
+ *          measurement_object.Scan();
+ *          if(measurement_object.current_out_of_range == true)
+ *          {
+ *              printf("current out of range!!!");
+ *          }
+ *          else
+ *          {
+ *              curr_mA = measurement_object.GetCurr();
+ *          }
+ *          if(measurement_object.voltage_out_of_range == true)
+ *          {
+ *              printf("voltage out of range!!!")
+ *          }
+ *          else
+ *          {
+ *          volt_mV = measurement_object.GetVolt();
+ *          }
+ *          power_mW = measurement_object.GetPower();
+ *         }
+ *     }
+ * }
  * @endcode
  * @ingroup module
  */
@@ -37,14 +88,14 @@ public:
     */
     bool current_out_of_range;
     bool voltage_out_of_range;
-    //************************************
-    //@brief Construct a new INAReader instance.
-    // Method:    INAReader::INAReader
-    // Description:   INAReader constructor
-    // Access:    public
-    // Returns:
-    // Qualifier:
-    //***********************************
+    /************************************
+    * @brief Construct a new INAReader instance.
+    * Method:    INAReader::INAReader
+    * Description:   INAReader constructor
+    * Access:    public
+    * Returns:
+    * Qualifier:
+    ***********************************/
     INAReader(PinName sda, PinName scl, int addr=0x40, int freq=100000, resolution_t res=RES_12BITS):
     INA219(sda, scl, addr, freq, res)
     {
@@ -56,19 +107,17 @@ public:
     }
     /**
     *@brief
-    *@param pv_volt PV Voltage value is read from INA module
-	            This will depend on voltage input from PV
-    *@param pv_curr PV Current value is read from INA module
-	            This will depend on current input from PV
-    *@param pv_power Power value of PV that is measured by INA module
-    *@param battery_volt batterry Voltage value  is read from INA module
-	             This will depend on batterry voltage
-    *@param battery_curr batterry Current value is read from INA module
-	             This will depend on batterry current
-    *@param battery_power Batterry power value is measured by INA module
-    */
-    /*
-    Adjust measurement range
+    *@param volt Voltage value is read from INA module
+	            This will depend on bus voltage (V+ pin) of INA219
+    *@param curr Current value is read from INA module
+	            This will depend on current through the shunt resistor
+    *@param power Power value of PV that is measured by INA module
+    *@param max_current the maximum of current set by operator
+    *@param max_voltage the maximum of voltage set by operator
+    *@param current_lsb the minimum current value that INA219 can sense in mA, to calculate the actual current value
+    *@param voltage_lsb the minimum voltage value that INA219 can sense in mV, to calculate the actual voltage value
+    *@param power_lsb  the minimum power value that INA219 can sense in mW, to calculate the actual power value
+    * Adjust measurement range
     */
     void Calibrate(float _shunt_value, float _max_current, float _max_voltage);
     /*
@@ -138,13 +187,13 @@ private:
     float read_bus_voltage();
 
 };
-    //************************************
-    // Method:    INAReader::Calibration
-    // Description:  Adjust measurement range
-    // Access:    public
-    // Returns:
-    // Qualifier:
-    //***********************************
+   /************************************
+    * Method:    INAReader::Calibration
+    * Description:  Adjust measurement range
+    * Access:    public
+    * Returns:
+    * Qualifier:
+    ***********************************/
 void INAReader::Calibrate(float _shunt_value, float _max_current, float _max_voltage)
 {
     uint16_t calibrating_value;
@@ -253,13 +302,13 @@ float INAReader::read_bus_voltage()
     float raw_volt = read_bus_voltage_raw();
     return raw_volt * voltage_lsb;
 }
-    //************************************
-    // Method:    INAReader::Scan
-    // Description:     Reading current value, voltage value, energy value form INA module
-    // Access:    public
-    // Returns:
-    // Qualifier:
-    //***********************************
+   /************************************
+    * Method:    INAReader::Scan
+    * Description:     Reading current value, voltage value, energy value form INA module
+    * Access:    public
+    * Returns:
+    * Qualifier:
+    ***********************************/
 void INAReader::Scan()
 {
     volt = read_bus_voltage();
@@ -283,35 +332,35 @@ void INAReader::Scan()
     }
 }
 
-    //************************************
-    // Method:    INAReader::GetPVVolt
-    // Description:    Reading PV voltage value
-    // Access:    public
-    // Returns:    pv_volt
-    // Qualifier:
-    //***********************************
+   /************************************
+    * Method:    INAReader::GetPVVolt
+    * Description:    Reading PV voltage value
+    * Access:    public
+    * Returns:    pv_volt
+    * Qualifier:
+    ***********************************/
 float INAReader::GetVolt()
 {
     return volt;
 }
-    //************************************
-    // Method:    INAReader::GetPVCurr
-    // Description:    Reading PV current value
-    // Access:    public
-    // Returns:    pv_curr
-    // Qualifier:
-    //***********************************
+   /************************************
+    * Method:    INAReader::GetPVCurr
+    * Description:    Reading PV current value
+    * Access:    public
+    * Returns:    pv_curr
+    * Qualifier:
+    ***********************************/
 float INAReader::GetCurr()
 {
     return curr;
 }
-    //************************************
-    // Method:    INAReader::GetPVPower
-    // Description:    Reading PV current value
-    // Access:    public
-    // Returns: pv_power
-    // Qualifier:
-    //***********************************
+   /************************************
+    * Method:    INAReader::GetPVPower
+    * Description:    Reading PV current value
+    * Access:    public
+    * Returns: pv_power
+    * Qualifier:
+    ***********************************/
 float INAReader::GetPower()
 {
     return power;
