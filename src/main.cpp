@@ -54,16 +54,23 @@
 #include <INAReader.h>
 #include <RTCTimer.h>
 #include <KeyboardController.h>
+
+#ifndef UNIT_TEST
+
 /*initialization lcd object*/
 I2CPreInit i2c_object(I2C_SDA, I2C_SCL);
 LCDController lcdcontroller(i2c_object);
+
 /*initialization current, voltage measuring object*/
 INAReader battery_measurement(I2C_SDA, I2C_SCL, 0x40);
 INAReader pv_measurement(I2C_SDA, I2C_SCL, 0x41);
+
 /*initialization keyboard object*/
 KeyboardController keyboard(SELECT_BUTTON_PIN, SET_BUTTON_PIN, INVERTER_ON_PIN);
+
 /*initialization realtime clock object */
 RTC_Timer rtc_timer;
+
 int main() {
     /*Display logo watershed on screen*/
     lcdcontroller.ShowLogo();
@@ -91,3 +98,4 @@ int main() {
         lcdcontroller.UpdateScreen(keyboard.menu_index);
     }
 }
+#endif /*UNIT_TEST*/
