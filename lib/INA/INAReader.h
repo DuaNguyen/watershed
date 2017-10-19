@@ -97,6 +97,12 @@ class INAReader: private INA219{
     * @param sda data pin of i2c communication
     * @param scl clock pin of i2c communication
     * @param addr INA219 i2c address
+    * i2c permissive addresses:
+    *    A1    |    A0    |    address
+    *   GND    |   GND    |    0x40
+    *   GND    |   Vs+    |    0x41
+    *   Vs+    |   GND    |    0x44
+    *   Vs+    |   GND    |    0x45
     * @param freq i2c frequency communication
     * @param res INA219 ADC resolution
     * Access: public
@@ -106,6 +112,12 @@ class INAReader: private INA219{
     INAReader(PinName sda, PinName scl, int addr = 0x40, int freq = 100000,
     resolution_t res = RES_12BITS):
     INA219(sda, scl, addr, freq, res) {
+        /*throw an exception when user set a wrong address*/
+        if ((0x40 != addr)&&(0x41 != addr)&&(0x44 != addr)&&(0x45 !=addr)) {
+            throw "exception - unavailable address!";
+        } else {
+             /*do nothing*/
+        }
         volt = 0;
         curr = 0;
         power = 0;
