@@ -79,8 +79,7 @@ int main() {
     pv_measurement.Calibrate(0.1, 3.2, 32);
     /*Wait for 3 seconds*/
     wait(3);
-    while(true)
-    {
+    while (true) {
         /*Reading values from INA module*/
         battery_measurement.Scan();
         pv_measurement.Scan();

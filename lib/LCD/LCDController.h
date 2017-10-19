@@ -10,8 +10,8 @@
  * All rights reserved.
  *
  *****************************************************************************/
-#ifndef _LCDCONTROLLER_H_
-#define _LCDCONTROLLER_H_
+#ifndef LIB_LCD_LCDCONTROLLER_H_
+#define LIB_LCD_LCDCONTROLLER_H_
 #include <Adafruit_SSD1306.h>
 
 /* an I2C sub-class that provides a constructed default */
@@ -22,11 +22,9 @@
 * @TODO make sure that user has checked i2c pins. checking LCD address again
 * LCD address can be 0x36 or 0x37 . it depend on logic value of SA0 pin on SSD1306 ic
 */
-class I2CPreInit : public I2C
-{
-public:
-    I2CPreInit(PinName sda, PinName scl) : I2C(sda, scl)
-    {
+class I2CPreInit : public I2C {
+ public:
+    I2CPreInit(PinName sda, PinName scl) : I2C(sda, scl) {
         frequency(400000);
         start();
     }
@@ -42,8 +40,7 @@ public:
 * @endcode
 * @ingroup module
 */
-class LCDController : private Adafruit_SSD1306_I2c
-{
+class LCDController : private Adafruit_SSD1306_I2c {
  public:
     /************************************
     * Method: LCDController::LCDController
@@ -57,9 +54,8 @@ class LCDController : private Adafruit_SSD1306_I2c
     * Qualifier:
     ***********************************/
 
-    LCDController(I2C &i2c, PinName RST = NC, uint8_t rawHeight = 64, uint8_t rawWidth = 128):
-    Adafruit_SSD1306_I2c(i2c, RST, SSD_I2C_ADDRESS, rawHeight, rawWidth)
-    {
+    explicit LCDController(I2C &i2c, PinName RST = NC, uint8_t rawHeight = 64, uint8_t rawWidth = 128):
+    Adafruit_SSD1306_I2c(i2c, RST, SSD_I2C_ADDRESS, rawHeight, rawWidth) {
         pv_volt = 0;
         pv_curr = 0;
         pv_power = 0;
@@ -114,8 +110,6 @@ class LCDController : private Adafruit_SSD1306_I2c
     int GetTime(int);
 
 
-
-
  private:
     /**********************************
     *@param second
@@ -137,9 +131,7 @@ class LCDController : private Adafruit_SSD1306_I2c
     float battery_power;
     float battery_energy;
     uint8_t second, minute, hour;
-
     void WriteAtPosition(uint8_t pos, const char* data);
-
 };
 
-#endif /*_LCDCONTROLLER_H_*/
+#endif /*LIB_LCD_LCDCONTROLLER_H_*/

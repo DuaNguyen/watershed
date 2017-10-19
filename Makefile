@@ -2,13 +2,14 @@
 #SHELL := /bin/bash
 #PATH := /usr/local/bin:$(PATH)
 
-#adding all files
-SOURCES = $(wildcard src/*.cpp) $(wildcard lib/*/*.cpp) $(wildcard test/*.cpp)
-HEADERS = $(wildcard lib/*/*.h *.hpp)
+#add all files
+SOURCES = $(wildcard src/*) $(wildcard lib/INA/*) $(wildcard lib/IO/*) $(wildcard lib/Keyboard/*) $(wildcard lib/LCD/*) $(wildcard lib/RTC/*) $(wildcard test/*)
+
+
 
 # linting using cpplint for python: https://github.com/google/styleguide/tree/gh-pages/cpplint
 lint:
-	 python cpplint.py ${HEADERS} ${SOURCES}
+	 python cpplint.py --linelength=120 ${SOURCES} 
 
 # perform unit test
 test:

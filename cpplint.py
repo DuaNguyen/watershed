@@ -5703,7 +5703,7 @@ def ProcessLine(filename, file_extension, clean_lines, line,
   CheckStyle(filename, clean_lines, line, file_extension, nesting_state, error)
   CheckLanguage(filename, clean_lines, line, file_extension, include_state,
                 nesting_state, error)
-  CheckForNonConstReference(filename, clean_lines, line, nesting_state, error)
+  # CheckForNonConstReference(filename, clean_lines, line, nesting_state, error)
   CheckForNonStandardConstructs(filename, clean_lines, line,
                                 nesting_state, error)
   CheckVlogArguments(filename, clean_lines, line, error)
@@ -5827,9 +5827,9 @@ def ProcessFileData(filename, file_extension, lines, error,
 
   CheckForIncludeWhatYouUse(filename, clean_lines, include_state, error)
 
-  # Check that the .cc file has included its header if it exists.
-  if _IsSourceExtension(file_extension):
-    CheckHeaderFileIncluded(filename, include_state, error)
+  # # Check that the .cc file has included its header if it exists.
+  # if _IsSourceExtension(file_extension):
+  #   CheckHeaderFileIncluded(filename, include_state, error)
 
   # We check here rather than inside ProcessLine so that we see raw
   # lines rather than "cleaned" lines.

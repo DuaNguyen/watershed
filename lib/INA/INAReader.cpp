@@ -1,4 +1,14 @@
-#include "mbed.h"
+/******************************************************************************
+ * @file    INAReader.cpp
+ * @author   Dua Nguyen
+ * @brief   Contains IO Pins map using for the demo
+ * @date     Oct. 2017
+ * @date modified 2017/10/13
+ * @version 1.0.0
+ * Copyright(C) 2017
+ * All rights reserved.
+ *
+ *****************************************************************************/
 #include "INAReader.h"
     /************************************
     * Method: INAReader::Calibration
@@ -21,9 +31,9 @@ void INAReader::Calibrate(float _shunt_value, float _max_current, float _max_vol
         resolution_mask = INA219_CONFIG_BADCRES_11BIT | INA219_CONFIG_SADCRES_11BIT_1S_276US;
     else if (resolution == RES_10BITS)
         resolution_mask = INA219_CONFIG_BADCRES_10BIT | INA219_CONFIG_SADCRES_10BIT_1S_148US;
-    else // resolution == RES_9BITS
+    else  /* resolution == RES_9BITS*/
         resolution_mask = INA219_CONFIG_BADCRES_9BIT | INA219_CONFIG_SADCRES_9BIT_1S_84US;
-    if(_max_voltage < 16) {
+    if (_max_voltage < 16) {
         write_register_u16(INA219_REG_CONFIG, INA219_CONFIG_BVOLTAGERANGE_16V |
                            INA219_CONFIG_GAIN_8_320MV |
                            resolution_mask |

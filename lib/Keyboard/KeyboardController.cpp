@@ -1,4 +1,14 @@
-#include "mbed.h"
+/******************************************************************************
+ * @file    KeyboardController.cpp
+ * @author   Dua Nguyen
+ * @brief   
+ * @date     Oct. 2017
+ * @date modified 2017/10/13
+ * @version 1.0.0
+ * Copyright(C) 2017
+ * All rights reserved.
+ *
+ *****************************************************************************/
 #include "KeyboardController.h"
     /************************************
     * Method: KeyboardController::Init
@@ -35,12 +45,9 @@ void KeyboardController::OnSelectButtonPressFallIsr() {
     time_out.attach(callback(this, &KeyboardController::AtTimeOut), 15);
     wait_ms(50);
     menu_index++;
-    if (menu_index >= 3)
-    {
+    if (menu_index >= 3) {
         menu_index = 0;
-    }
-    else
-    {
+    } else {
         /*Do nothing*/
     }
     select_button.enable_irq();
@@ -54,13 +61,10 @@ void KeyboardController::OnSelectButtonPressFallIsr() {
     ***********************************/
 void KeyboardController::OnSetButtonPressFallIsr() {
     set_button.disable_irq();
-    if((1 == menu_index) || (2 == menu_index))
-    {
+    if ((1 == menu_index) || (2 == menu_index)) {
         timer_on = !timer_on;
         time_out.attach(callback(this, &KeyboardController::OnsetButtonLongPress), 2);
-    }
-    else
-    {
+    } else {
         /*Do nothing*/
     }
     set_button.enable_irq();
@@ -75,12 +79,9 @@ void KeyboardController::OnSetButtonPressFallIsr() {
 void KeyboardController::OnSetButtonPressRiseIsr() {
     set_button.disable_irq();
     wait_ms(50);
-    if((1 == menu_index) || (2 == menu_index))
-    {
+    if ((1 == menu_index) || (2 == menu_index)) {
         time_out.attach(callback(this, &KeyboardController::AtTimeOut), 15);
-    }
-    else
-    {
+    } else {
         /*Do nothing*/
     }
     set_button.enable_irq();

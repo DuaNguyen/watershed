@@ -1,4 +1,15 @@
-#include "mbed.h"
+/******************************************************************************
+ * @file    LCDController.cpp
+ * @author   Dua Nguyen
+ * @brief    This file consist of classes which use to manage content on screen
+ *  and the screen is controlled to display three separate menu
+ * @date     Oct. 2017
+ * @date modified 2017/10/13
+ * @version   1.0.0
+ * Copyright(C) 2017
+ * All rights reserved.
+ *
+ *****************************************************************************/
 #include "LCDController.h"
 #include <logo.h>
     /************************************
@@ -119,8 +130,7 @@ void LCDController::UpdateScreen(uint8_t screen_index) {
     char buff[12]; /*Data buffer*/
     clearDisplay();
     /* Update screen contents */
-    switch (screen_index)
-    {
+    switch (screen_index) {
         case(0) : {
             WriteAtPosition(0, "MAIN MENU");
             WriteAtPosition(1, "Charge");
@@ -200,10 +210,9 @@ display();
 void LCDController::WriteAtPosition(uint8_t pos, const char* data) {
     const uint16_t cursor_pos_col[3] = { 0, 45, 78 };
     const uint16_t cursor_pos_row[4] = { 18, 30, 42, 54 };
-    if(pos == 0) {
+    if (pos == 0) {
     setTextCursor(0, 0);
-}
-else {
+} else {
     setTextCursor(cursor_pos_col[(pos-1)%3], cursor_pos_row[(pos-1)/3]);
 }
     printf("%s", data);
@@ -234,16 +243,13 @@ float LCDController::GetPVEnergy(void) {
     return pv_energy;
 }
 int LCDController::GetTime(int i) {
-    if(i==0)
-        {
+    if (i == 0) {
             return second;
         }
-    if(i==1)
-        {
+    if (i == 1) {
             return minute;
         }
-    if(i==2)
-        {
+    if (i == 2) {
             return hour;
         }
 }

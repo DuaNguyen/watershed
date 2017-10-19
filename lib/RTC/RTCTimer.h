@@ -9,8 +9,8 @@
  * All rights reserved.
  *
  *****************************************************************************/
-#ifndef _RTCTIMER_H_
-#define _RTCTIMER_H_
+#ifndef LIB_RTC_RTCTIMER_H_
+#define LIB_RTC_RTCTIMER_H_
 #include <mbed.h>
 /* Class for configuration and Reading data from INA module
 * If this source file built with example, the <RTCTimer.h> library
@@ -24,7 +24,7 @@
 * @ingroup module
 */
 class RTC_Timer{
-public:
+ public:
     /************************************
     * Method: RTC_Timer::RTC_Timer
     * Description: RTC_Timer constructor
@@ -98,10 +98,9 @@ public:
         return time(NULL);
     }
 
-private:
+ private:
     bool timer_state;
     uint8_t second, minute, hour, day;
     uint32_t seconds;
-
 };
-#endif /*_RTCTIMER_H_*/
+#endif /*LIB_RTC_RTCTIMER_H_*/

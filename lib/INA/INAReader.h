@@ -35,6 +35,7 @@
 #ifndef LIB_INA_INAREADER_H_
 #define LIB_INA_INAREADER_H_
 #include <INA219.hpp>
+#include <mbed.h>
 
 /* Class for configuration and Reading data from INA module
  * If this source file built with example, the <mbed.h> and <INAReader> library
