@@ -32,8 +32,7 @@ public:
     * Returns:
     * Qualifier:
     ************************************/
-    RTC_Timer()
-    {
+    RTC_Timer() {
         timer_state = false;
         second = 0;
         minute = 0;
@@ -48,8 +47,7 @@ public:
     * Returns:
     * Qualifier:
     ************************************/
-    void Reset()
-    {
+    void Reset() {
         timer_state = true;
         set_time(0);
         second = 0;
@@ -57,20 +55,16 @@ public:
         hour = 0;
         day = 0;
     }
-    void Off()
-    {
+    void Off() {
         timer_state = false;
     }
-    void On()
-    {
+    void On() {
         timer_state = true;
     }
-    void ChangeState()
-    {
+    void ChangeState() {
         timer_state = !timer_state;
     }
-    bool GetState()
-    {
+    bool GetState() {
         return timer_state;
     }
     /************************************
@@ -80,8 +74,7 @@ public:
     * Returns:
     * Qualifier:
     ************************************/
-    void Update()
-    {
+    void Update() {
         /* Update timer*/
         seconds = time(NULL); /*TODO: bo sung header cho ham time */
         second = seconds % 60;
@@ -89,23 +82,19 @@ public:
         hour = seconds % 86400 / 3600;
     }
 
-    int GetSecond()
-    {
+    int GetSecond() {
         return second;
     }
 
-    int GetMinute()
-    {
+    int GetMinute() {
         return minute;
     }
 
-    int GetHour()
-    {
+    int GetHour() {
         return hour;
     }
 
-    uint32_t GetSecond_s()
-    {
+    uint32_t GetSecond_s() {
         return time(NULL);
     }
 

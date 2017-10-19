@@ -26,5 +26,8 @@ clean:
 update:
 	platformio -f update
 
+build:
+	platformio run
+	
 # Print makefile variable, use for debugging
 print-%  : ; @echo $* = $($*)

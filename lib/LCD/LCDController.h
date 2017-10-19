@@ -44,7 +44,7 @@ public:
 */
 class LCDController : private Adafruit_SSD1306_I2c
 {
-public:
+ public:
     /************************************
     * Method: LCDController::LCDController
     * @brief: LCDController constructor
@@ -116,29 +116,29 @@ public:
 
 
 
-private:
-   /**********************************
-   *@param second
-   *@param minute
-   *@param hour
-   *Second value, minute value, hour value start 0. when pressing button, it starts to increase
-   *it's updated continuously to display on screen
-   *@param cursor_pos_col Column position array
-   *@param cursor_pos_row row position array
-   *The screen is divided to 12 separate area
-   *so we need 3 column and 4 row position values to locate a specific area
-   **************************************/
-   float pv_volt;
-   float pv_curr;
-   float pv_power;
-   float pv_energy;
-   float battery_volt;
-   float battery_curr;
-   float battery_power;
-   float battery_energy;
-   uint8_t second, minute, hour;
+ private:
+    /**********************************
+    *@param second
+    *@param minute
+    *@param hour
+    *Second value, minute value, hour value start 0. when pressing button, it starts to increase
+    *it's updated continuously to display on screen
+    *@param cursor_pos_col Column position array
+    *@param cursor_pos_row row position array
+    *The screen is divided to 12 separate area
+    *so we need 3 column and 4 row position values to locate a specific area
+    **************************************/
+    float pv_volt;
+    float pv_curr;
+    float pv_power;
+    float pv_energy;
+    float battery_volt;
+    float battery_curr;
+    float battery_power;
+    float battery_energy;
+    uint8_t second, minute, hour;
 
-   void WriteAtPosition(uint8_t pos, const char* data);
+    void WriteAtPosition(uint8_t pos, const char* data);
 
 };
 

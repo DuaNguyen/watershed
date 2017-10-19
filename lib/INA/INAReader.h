@@ -32,8 +32,8 @@
   *		 from corresponding register of INA219.
  *Exceptions:  INA219 module is not connected.
  */
-#ifndef _INAREADER_H_
-#define _INAREADER_H_
+#ifndef LIB_INA_INAREADER_H_
+#define LIB_INA_INAREADER_H_
 #include <INA219.hpp>
 
 /* Class for configuration and Reading data from INA module
@@ -81,7 +81,7 @@
  * @ingroup module
  */
 class INAReader: private INA219{
-public:
+ public:
     /**
     *@param current_out_of_range alarm when current out of range
     *@param voltage_out_of_range alarm when voltage out of range
@@ -102,9 +102,9 @@ public:
     * Returns:
     * Qualifier:
     ***********************************/
-    INAReader(PinName sda, PinName scl, int addr=0x40, int freq=100000, resolution_t res=RES_12BITS):
-    INA219(sda, scl, addr, freq, res)
-    {
+    INAReader(PinName sda, PinName scl, int addr = 0x40, int freq = 100000,
+    resolution_t res = RES_12BITS):
+    INA219(sda, scl, addr, freq, res) {
         volt = 0;
         curr = 0;
         power = 0;
@@ -145,7 +145,8 @@ public:
     void GetVolt(float value);
     void GetCurr(float value);
     void TestScanning();
-private:
+
+ private:
    /**
    *@brief
    *@param volt Voltage value is read from INA module
@@ -216,7 +217,5 @@ private:
      *      A floating point value corresponding to the voltage of V+ (in V).
      */
     float read_bus_voltage();
-
-
 };
-#endif /*_INAREADER_H_*/
+#endif /*LIB_INA_INAREADER_H_*/

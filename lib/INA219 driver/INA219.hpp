@@ -22,8 +22,8 @@ typedef enum {
 /** @class INA219
  *  @brief A class to represent the INA219 breakout board from Adafruit.
  */
-class INA219: protected I2C
-{
+class INA219: protected I2C {
+
 public:
     /** Creates an instance of the INA219 device.
      *
