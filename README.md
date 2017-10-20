@@ -6,40 +6,47 @@ System diagram
 --------------
 ![system diagram](https://raw.githubusercontent.com/DuaNguyen/watershed/master/system_diagram.png)
 
-Project structure
+Library Dependency Graph
 --------------
 ```
-root/
-├── lib/
-│   ├── INA219/
-│   │   ├── INA219_consts.h
-│   │   ├── INA219.hpp
-│   │   └── INA219.cpp
-│   │
-│   ├── IO/
-│   │   ├── interruptfunc.h  // button SW_SET and SW_SELECT
-│   │   └── iopin.h    //IO pins definition
-│   │
-│   ├── LCD_display/
-│   │   ├── lcd_menu.hpp  // 3 menus
-│   │   └── logo.h    // contains Watershed's logo
-│   │
-│   └── SSD1306/
-│       ├── Adafruit_GFX.h
-│       ├── Adafruit_GFX.cpp
-│       ├── Adafruit_GFX_Config.h
-│       ├── Adafruit_SSD1306.h
-│       └── Adafruit_SSD1306.cpp
-│     
-└── src/
-    └── main.cpp  // main function goes here
-
+|-- <Keyboard>
+|-- <IO>
+|-- <LCD>
+|   |-- <Adafruit_GFX>
+|-- <INA>
+|   |-- <INA219_driver>
+|-- <RTC>
 ```
+
+System requirements
+--------------
+Operating System: 
+Windows, macOS, Linux
+Python 2.7 (for lint checking)
+ 	
+ 	
+
 
 Installation
 --------------
+This program requires PlatformIO Core, which is can be found at http://docs.platformio.org/en/latest/installation.html.To run unit test/ program, you'll need to plug STM32 Nucleo-32 development board in your computer
 
 Usage
 --------------
-
+#### Check linting error with google's style guides
+```shell
+$ make lint
+```
+#### Run unit test (need plugged in to real board)
+```shell
+$ make unit_test
+```
+#### Build hex files
+```shell
+$ make build
+```
+#### Build & upload firmware (need plugged in to real board)
+```shell
+$ make all
+```
 To be updated ...

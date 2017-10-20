@@ -12,7 +12,7 @@ lint:
 	 python cpplint.py --linelength=120 ${SOURCES} 
 
 # perform unit test
-test:
+unit_test:
 	platformio test
 
 # build then upload to device, print size of the sections in a firmware/program
@@ -29,6 +29,7 @@ update:
 
 build:
 	platformio run
-	
+
 # Print makefile variable, use for debugging
 print-%  : ; @echo $* = $($*)
+
