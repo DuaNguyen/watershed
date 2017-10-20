@@ -29,7 +29,7 @@ Python 2.7 (for lint checking)
 
 Installation
 --------------
-This program requires PlatformIO Core, which is can be found at http://docs.platformio.org/en/latest/installation.html
+This program requires PlatformIO Core, which can be found at http://docs.platformio.org/en/latest/installation.html
 To run unit test/ program, you'll need to plug STM32 Nucleo-32 development board in your computer
 
 Usage
