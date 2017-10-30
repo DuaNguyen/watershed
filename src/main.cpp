@@ -56,6 +56,9 @@
 #include <KeyboardController.h>
 
 #ifndef UNIT_TEST
+#define SHUNT_RES_VALUE 0.016
+#define MAX_CURRENT_VALUE 0.2
+#define MAX_VOLTAGE_VALUE 16
 
 /*initialization lcd object*/
 I2CPreInit i2c_object(I2C_SDA, I2C_SCL);
@@ -63,7 +66,6 @@ LCDController lcdcontroller(i2c_object);
 
 /*initialization current, voltage measuring object*/
 INAReader battery_measurement(I2C_SDA, I2C_SCL, 0x40);
-INAReader pv_measurement(I2C_SDA, I2C_SCL, 0x41);
 
 /*initialization keyboard object*/
 KeyboardController keyboard(SELECT_BUTTON_PIN, SET_BUTTON_PIN, INVERTER_ON_PIN);
@@ -74,24 +76,19 @@ RTC_Timer rtc_timer;
 int main() {
     /*Display logo watershed on screen*/
     lcdcontroller.ShowLogo();
-    /*calibrate ina219 with 0.1 ohm Shunt, max current 3.2A, max voltage 32V*/
-    battery_measurement.Calibrate(0.1, 3.2, 32);
-    pv_measurement.Calibrate(0.1, 3.2, 32);
+    /*calibrate ina219 with Shunt resistor value, max current value, max voltage value*/
+    battery_measurement.Calibrate(SHUNT_RES_VALUE, MAX_CURRENT_VALUE, MAX_VOLTAGE_VALUE);
     /*Wait for 3 seconds*/
     wait(3);
     while (true) {
         /*Reading values from INA module*/
         battery_measurement.Scan();
-        pv_measurement.Scan();
         /*updating realtime clock*/
         rtc_timer.Update();
         /*updating properties of lcd object */
         lcdcontroller.SetBattVolt(battery_measurement.GetVolt());
         lcdcontroller.SetBattCurr(battery_measurement.GetCurr());
         lcdcontroller.SetBattPower(battery_measurement.GetPower());
-        lcdcontroller.SetPVVolt(pv_measurement.GetVolt());
-        lcdcontroller.SetPVCurr(pv_measurement.GetCurr());
-        lcdcontroller.SetPVPower(pv_measurement.GetPower());
         lcdcontroller.SetTime(rtc_timer.GetHour(), rtc_timer.GetMinute(), rtc_timer.GetSecond());
         /*selecting screen to display*/
         lcdcontroller.UpdateScreen(keyboard.menu_index);
