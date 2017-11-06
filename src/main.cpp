@@ -42,7 +42,7 @@
    Hardware setup:
    SELECT_BUTTON_PIN ------------PB_0
    SET_BUTTON_PIN ---------------PB_1
-   INVERTER_ON_PIN --------------PB_2
+   INVERTER_ON_PIN --------------PB_3
   */
  /*****************************************************************************
   * RTCtimer functionality including count a period time to calculate energy of battery
@@ -53,11 +53,12 @@
 #include <LCDController.h>
 #include <INAReader.h>
 #include <RTCTimer.h>
-#include <KeyboardController.h>
+#include <Button.h>
+#include <EventHandling.h>
 
 #ifndef UNIT_TEST
 #define SHUNT_RES_VALUE 0.016
-#define MAX_CURRENT_VALUE 0.2
+#define MAX_CURRENT_VALUE 3.2
 #define MAX_VOLTAGE_VALUE 16
 
 /*initialization lcd object*/
@@ -68,7 +69,12 @@ LCDController lcdcontroller(i2c_object);
 INAReader battery_measurement(I2C_SDA, I2C_SCL, 0x40);
 
 /*initialization keyboard object*/
-KeyboardController keyboard(SELECT_BUTTON_PIN, SET_BUTTON_PIN, INVERTER_ON_PIN);
+Button selecting(SELECT_BUTTON_PIN);
+Button setting(SET_BUTTON_PIN);
+Button enable_inverter(INVERTER_ON_PIN);
+
+/*initialization event handling object*/
+EventHandling event_handling;
 
 /*initialization realtime clock object */
 RTC_Timer rtc_timer;
@@ -85,13 +91,29 @@ int main() {
         battery_measurement.Scan();
         /*updating realtime clock*/
         rtc_timer.Update();
+        /*Scan triggers*/
+        event_handling.SwitchMenuTrigger(selecting.GetShortPress());
+        event_handling.TimerIsOnTrigger(setting.GetShortPress());
+        event_handling.TimerResetTrigger(setting.GetLongPress());
+        event_handling.InverterTurnOnTrigger(enable_inverter.GetShortPress());
+        /*handling events*/
+        if (event_handling.GetTimerIsOn()) {
+            rtc_timer.On();
+        } else {
+            rtc_timer.Off();
+        }
+        if (event_handling.GetTimerReset()) {
+            rtc_timer.Reset();
+        } else {
+          /* do nothing*/
+        }
         /*updating properties of lcd object */
         lcdcontroller.SetBattVolt(battery_measurement.GetVolt());
         lcdcontroller.SetBattCurr(battery_measurement.GetCurr());
         lcdcontroller.SetBattPower(battery_measurement.GetPower());
         lcdcontroller.SetTime(rtc_timer.GetHour(), rtc_timer.GetMinute(), rtc_timer.GetSecond());
         /*selecting screen to display*/
-        lcdcontroller.UpdateScreen(keyboard.menu_index);
+        lcdcontroller.UpdateScreen(event_handling.GetMenuIndex());
     }
 }
 #endif /*UNIT_TEST*/
