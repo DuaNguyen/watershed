@@ -40,7 +40,7 @@ class I2CPreInit : public I2C {
 * @endcode
 * @ingroup module
 */
-class LCDController : private Adafruit_SSD1306_I2c {
+class LCDController : public Adafruit_SSD1306_I2c {
  public:
     /************************************
     * Method: LCDController::LCDController
@@ -91,26 +91,7 @@ class LCDController : private Adafruit_SSD1306_I2c {
     /*Setting timer value*/
     void SetTime(uint8_t _hour, uint8_t _minute, uint8_t _second);
 
-    float GetPVVolt(void);
-
-    float GetPVCurr(void);
-
-    float GetPVPower(void);
-
-    float GetPVEnergy(void);
-
-    float GetBattVolt(void);
-
-    float GetBattCurr(void);
-
-    float GetBattPower(void);
-
-    float GetBattEnergy(void);
-
-    int GetTime(int);
-
-
- private:
+ protected:
     /**********************************
     *@param second
     *@param minute

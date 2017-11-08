@@ -153,13 +153,8 @@ class INAReader: private INA219{
     float GetVolt();
     float GetCurr();
     float GetPower();
-    bool Get_voltage_out_of_range();
-    bool Get_current_out_of_range();
-    void GetVolt(float value);
-    void GetCurr(float value);
-    void TestScanning();
 
- private:
+ protected:
    /**
    *@brief
    *@param volt Voltage value is read from INA module

@@ -159,7 +159,7 @@ void LCDController::UpdateScreen(uint8_t screen_index) {
             WriteAtPosition(5, buff);
             WriteAtPosition(6, "6");
             WriteAtPosition(7, "Power");
-            snprintf(buff, sizeof(buff), "%2.1fW ", pv_power);
+            snprintf(buff, sizeof(buff), "%2.1fW ", pv_power/1000);
             WriteAtPosition(8, buff);
             WriteAtPosition(9, "9");
             WriteAtPosition(10, "Energy");
@@ -185,7 +185,7 @@ void LCDController::UpdateScreen(uint8_t screen_index) {
             snprintf(buff, sizeof(buff), "%2.1f V ", battery_volt/1000);
             WriteAtPosition(2, buff);
             /* Update battery power*/
-            snprintf(buff, sizeof(buff), "%2.1fW ", battery_power);
+            snprintf(buff, sizeof(buff), "%2.1fW ", battery_power/1000);
             WriteAtPosition(8, buff);
             /* Update battery energy */
             snprintf(buff, sizeof(buff), "%3.1fWh", battery_energy);
@@ -217,39 +217,4 @@ void LCDController::WriteAtPosition(uint8_t pos, const char* data) {
 }
     printf("%s", data);
     setTextCursor(0, 0);
-}
-float LCDController::GetBattVolt(void) {
-    return battery_volt;
-}
-float LCDController::GetBattCurr(void) {
-    return battery_curr;
-}
-float LCDController::GetBattPower(void) {
-    return battery_power;
-}
-float LCDController::GetBattEnergy(void) {
-    return battery_energy;
-}
-float LCDController::GetPVVolt(void) {
-    return pv_volt;
-}
-float LCDController::GetPVCurr(void) {
-    return pv_curr;
-}
-float LCDController::GetPVPower(void) {
-    return pv_power;
-}
-float LCDController::GetPVEnergy(void) {
-    return pv_energy;
-}
-int LCDController::GetTime(int i) {
-    if (i == 0) {
-            return second;
-        }
-    if (i == 1) {
-            return minute;
-        }
-    if (i == 2) {
-            return hour;
-        }
 }
