@@ -141,7 +141,7 @@ void setINAOutOfRangeValue(void) {
     /*Calling Calibrate method of test_measurement object to change max voltage value,
      *max current value, shunt resistor value.
      */
-    test_measurement.Calibrate(0.1, 3.19, 32);
+    test_measurement.Calibrate(0.016, 3.2, 32);
     /*changing voltage input value*/
     test_measurement.SetVolt(32.1);
     /*changing curent input value*/
@@ -336,7 +336,7 @@ int main() {
 
     RUN_TEST(testSwitchMenu);
 
-    RUN_TEST(testEventTimer);
+    //RUN_TEST(testEventTimer);
 
     RUN_TEST(testEventInverter);
 
