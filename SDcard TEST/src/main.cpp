@@ -39,54 +39,38 @@ void errno_error(void* ret_val){
 int main()
 {
 	mylcd.clearDisplay();
-	int error = 0;
-	printf("Welcome to the filesystem example.\n");
-
-	printf("Opening a new file, numbers.txt.");
-	FILE* fd = fopen("/sd/numbers.txt", "w+");
+	printf("TEST combined read/write SD card and LCD display.\n");
+	printf("Opening a new file, testsd.txt.");
+	FILE* fd = fopen("/sd/testsd.txt", "w+");
 	errno_error(fd);
 
-	for (int i = 0; i < 20; i++){
-		printf("Writing decimal numbers to a file (%d/20)\r", i);
-		fprintf(fd, "%d\n", i);
-	}
-	printf("Writing decimal numbers to a file (20/20) done.\n");
-
+  mylcd.printf("write to sd card: Hey Watershed, sd card testing...\n");
+  mylcd.display();
+  fputs("Hey Watershed, sd card testing...\n", fd);
 	printf("Closing file.");
 	fclose(fd);
 	printf(" done.\n");
-
+  mylcd.printf("Re-open and read from sd card:\n");
+  mylcd.display();
 	printf("Re-opening file read-only.");
-	fd = fopen("/sd/numbers.txt", "r");
+	fd = fopen("/sd/testsd.txt", "r");
 	errno_error(fd);
 
 	printf("Dumping file to screen.\n");
-	char buff[16] = {0};
+	char buff[255] = {0};
 	while (!feof(fd)){
 		int size = fread(&buff[0], 1, 15, fd);
 		fwrite(&buff[0], 1, size, stdout);
 	}
-	printf("EOF.\n");
-
+  fseek(fd, SEEK_SET, 0);
+  fgets(buff, 255, fd);
+  mylcd.printf("%s\n",buff);
 	printf("Closing file.");
 	fclose(fd);
 	printf(" done.\n");
 
-	printf("Opening root directory.");
-	DIR* dir = opendir("/sd/");
-	errno_error(fd);
-
-	struct dirent* de;
-	printf("Printing all filenames:\n");
-	while((de = readdir(dir)) != NULL){
-		printf("  %s\n", &(de->d_name)[0]);
-	}
-
-	printf("Closeing root directory. ");
-	error = closedir(dir);
-	return_error(error);
 	printf("Filesystem Demo complete.\n");
-	mylcd.printf("hello");
+	mylcd.printf("done!");
 	mylcd.display();
 	while (true) {}
 }
