@@ -266,6 +266,7 @@ void testEventInverter() {
 }
 void testEventTimer() {
     // test on off event timer
+    testeventhandling.SetMenuIndex(1);
     testeventhandling.TimerIsOnTrigger(true);
     TEST_ASSERT(testeventhandling.GetTimerIsOn() == false);
     testeventhandling.TimerIsOnTrigger(true);
@@ -286,13 +287,13 @@ void connectTestingButtonAndEventHandling() {
     testeventhandling.SwitchMenuTrigger(testselecting.GetShortPress());
     TEST_ASSERT(testeventhandling.GetMenuIndex() == 1);
     // checking timer sate when pressing button
-    TEST_ASSERT(testeventhandling.GetTimerIsOn() == true);
+    TEST_ASSERT(testeventhandling.GetTimerIsOn() == false);
     testsetting.SetButtonLastState(false);
     testsetting.SetButtonCurrentState(true);
     testsetting.SetCount(10);
     testsetting.TestSampleBTN();
     testeventhandling.TimerIsOnTrigger(testsetting.GetShortPress());
-    TEST_ASSERT(testeventhandling.GetTimerIsOn() == false);
+    TEST_ASSERT(testeventhandling.GetTimerIsOn() == true);
     // checking reset timer event when long press event is occur.
     testsetting.SetCount(151);
     testsetting.TestSampleBTN();
@@ -336,7 +337,7 @@ int main() {
 
     RUN_TEST(testSwitchMenu);
 
-    //RUN_TEST(testEventTimer);
+    RUN_TEST(testEventTimer);
 
     RUN_TEST(testEventInverter);
 

@@ -153,6 +153,10 @@ class INAReader: private INA219{
     float GetVolt();
     float GetCurr();
     float GetPower();
+    /** @brief: Test INA219 when power on.
+     *  @return: true if pass the test.
+     */
+    bool PowerOnSelfTest();
 
  protected:
    /**
