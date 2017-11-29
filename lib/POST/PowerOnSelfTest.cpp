@@ -38,9 +38,37 @@ const char* PowerOnSelfTest::POST_INA219(bool value) {
     } else {
         POST_result = false;
         printf("INA219 POST is false! Make sure that the i2c address is 0x40\n");
-        return "INA219: False!\n Pls check the i2c address!";
+        return "INA219: False!\nPls check i2c addr!\n";
     }
 }
 bool PowerOnSelfTest::GetResult() {
     return POST_result;
+}
+/** @brief: handle power on self test for IO Expander (push notification)
+ *  @param: value - a boolean argument pass or false the test
+ *  @return: a noti string to display on lcd.
+ */
+const char* PowerOnSelfTest::POST_IOExpander(bool value) {
+    if(true == value) {
+        printf("I2c Expander POST is passed!\n");
+        return "Expander: Ok!\n";
+    } else {
+        POST_result = false;
+        printf("I2c Expander POST is false! Make sure that the mask i2c address is 0\n");
+        return "Expander: False!\nPls check i2c addr!\n";
+  }
+}
+/** @brief: handle power on self test for SD Card (push notification)
+ *  @param: value - a boolean argument pass or false the test
+ *  @return: a noti string to display on lcd.
+ */
+const char* PowerOnSelfTest::POST_SDCard(bool value) {
+    if(true == value) {
+        printf("Memory POST is passed!\n");
+        return "Memory: Ok!\n";
+    } else {
+        POST_result = false;
+        printf("Memory POST is false! Make sure that the sd card is installed\n");
+        return "Memory: False!\nPls check sd card socket!\n";
+  }
 }
