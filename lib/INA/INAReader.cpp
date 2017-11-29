@@ -197,7 +197,7 @@ float INAReader::GetPower() {
  */
 bool INAReader::PowerOnSelfTest() {
     bool return_value;
-    if(8192 == read_register_u16(INA219_REG_CALIBRATION)) {
+    if (8192 == read_register_u16(INA219_REG_CALIBRATION)) {
         return_value = true;
     } else {
         return_value = false;

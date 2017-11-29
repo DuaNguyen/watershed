@@ -55,6 +55,7 @@
 #include <RTCTimer.h>
 #include <Button.h>
 #include <EventHandling.h>
+#include <PowerOnSelfTest.h>
 
 #ifndef UNIT_TEST
 #define SHUNT_RES_VALUE 0.016
@@ -78,8 +79,15 @@ EventHandling event_handling;
 
 /*initialization realtime clock object */
 RTC_Timer rtc_timer;
-
+PowerOnSelfTest POST;
+DigitalOut led(PB_4);
 int main() {
+    lcdcontroller.PostDisplay(POST.POST_INA219(battery_measurement.PowerOnSelfTest()));
+    while (false == POST.GetResult()) {
+        led = !led;
+        wait(0.5);
+    }
+    wait(0.5);
     /*Display logo watershed on screen*/
     lcdcontroller.ShowLogo();
     /*calibrate ina219 with Shunt resistor value, max current value, max voltage value*/

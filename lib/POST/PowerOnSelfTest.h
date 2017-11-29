@@ -48,6 +48,6 @@ public:
      *  @return: a noti string to display on lcd.
      */
     const char* POST_IOExpander(bool value);
-    void POST_CheckResult();
+    bool GetResult();
 };
 #endif /*LIB_POST_POWERONSELFTEST_H_*/
