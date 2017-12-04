@@ -48,14 +48,17 @@
   * RTCtimer functionality including count a period time to calculate energy of battery
     and PV
  *****************************************************************************/
+#define MBED_CONF_FILESYSTEM_PRESENT 1
 #include <IOPins.h>
 #include <mbed.h>
+#include <rtos.h>
 #include <LCDController.h>
 #include <INAReader.h>
 #include <RTCTimer.h>
 #include <Button.h>
 #include <EventHandling.h>
-
+#include <FATFileSystem.h>
+#include <SDBlockDevice.h>
 #ifndef UNIT_TEST
 #define SHUNT_RES_VALUE 0.016
 #define MAX_CURRENT_VALUE 3.2
@@ -78,8 +81,11 @@ EventHandling event_handling;
 
 /*initialization realtime clock object */
 RTC_Timer rtc_timer;
-
+/*initialization sd card object*/
+SDBlockDevice sd(SDIO_MOSI, SDIO_MISO, SDIO_SCK, SDIO_CS); // mosi, miso, sclk, cs
+FATFileSystem fs("sd", &sd);
 int main() {
+    FILE* fd;
     /*Display logo watershed on screen*/
     lcdcontroller.ShowLogo();
     /*calibrate ina219 with Shunt resistor value, max current value, max voltage value*/
@@ -114,6 +120,9 @@ int main() {
         lcdcontroller.SetTime(rtc_timer.GetHour(), rtc_timer.GetMinute(), rtc_timer.GetSecond());
         /*selecting screen to display*/
         lcdcontroller.UpdateScreen(event_handling.GetMenuIndex());
+        fd = fopen("/sd/test.txt", "a");
+        fprintf(fd, "\r\n%d : %d : %d", rtc_timer.GetHour(), rtc_timer.GetMinute(), rtc_timer.GetSecond());
+        fclose(fd);
     }
 }
 #endif /*UNIT_TEST*/
