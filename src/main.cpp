@@ -57,8 +57,7 @@
 #include <RTCTimer.h>
 #include <Button.h>
 #include <EventHandling.h>
-#include <FATFileSystem.h>
-#include <SDBlockDevice.h>
+#include <EnergyStorage.h>
 #ifndef UNIT_TEST
 #define SHUNT_RES_VALUE 0.016
 #define MAX_CURRENT_VALUE 3.2
@@ -81,22 +80,25 @@ EventHandling event_handling;
 
 /*initialization realtime clock object */
 RTC_Timer rtc_timer;
-/*initialization sd card object*/
-SDBlockDevice sd(SDIO_MOSI, SDIO_MISO, SDIO_SCK, SDIO_CS); // mosi, miso, sclk, cs
-FATFileSystem fs("sd", &sd);
+/*initialization energy storage object*/
+EnergyStorage energy_storage(SDIO_MOSI, SDIO_MISO, SDIO_SCK, SDIO_CS);
 int main() {
-    FILE* fd;
     /*Display logo watershed on screen*/
     lcdcontroller.ShowLogo();
     /*calibrate ina219 with Shunt resistor value, max current value, max voltage value*/
     battery_measurement.Calibrate(SHUNT_RES_VALUE, MAX_CURRENT_VALUE, MAX_VOLTAGE_VALUE);
+    /*verify/read the latest energy stored value.*/
+    energy_storage.ReloadEnergy();
     /*Wait for 3 seconds*/
     wait(3);
+    energy_storage.Init();
     while (true) {
         /*Reading values from INA module*/
         battery_measurement.Scan();
         /*updating realtime clock*/
         rtc_timer.Update();
+        /*updating real power for energy calculation*/
+        energy_storage.UpdatePower(battery_measurement.GetPower()/1000);
         /*Scan triggers*/
         event_handling.SwitchMenuTrigger(selecting.GetShortPress());
         event_handling.TimerIsOnTrigger(setting.GetShortPress());
@@ -117,12 +119,11 @@ int main() {
         lcdcontroller.SetBattVolt(battery_measurement.GetVolt());
         lcdcontroller.SetBattCurr(battery_measurement.GetCurr());
         lcdcontroller.SetBattPower(battery_measurement.GetPower());
+        lcdcontroller.SetBattEnergy(energy_storage.GetEnergy());
         lcdcontroller.SetTime(rtc_timer.GetHour(), rtc_timer.GetMinute(), rtc_timer.GetSecond());
         /*selecting screen to display*/
         lcdcontroller.UpdateScreen(event_handling.GetMenuIndex());
-        fd = fopen("/sd/test.txt", "a");
-        fprintf(fd, "\r\n%d : %d : %d", rtc_timer.GetHour(), rtc_timer.GetMinute(), rtc_timer.GetSecond());
-        fclose(fd);
+
     }
 }
 #endif /*UNIT_TEST*/

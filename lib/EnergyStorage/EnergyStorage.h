@@ -15,6 +15,7 @@
 #include "FATFileSystem.h"
 #include "SDBlockDevice.h"
 #define ENERGY_STORAGE_PERIOD 1
+#define ENERGY_CALC_PERIOD 0.5
 #define SD_MOUNT_PATH         "sd"
 #define FULL_LOG_FILE_PATH    "/sd/energylog.txt"
 /** Class: EnergyStorage
@@ -26,12 +27,20 @@
  */
 class EnergyStorage {
 protected:
-    float32_t energy_value;
-    Ticker _tick;
-    SDBlockDevice sd; // mosi, miso, sclk, cs
-    FATFileSystem fs;
+    float32_t energy_value; /*energy in Wh*/
+    float32_t power_value;  /*power in W*/
+    bool err_flag;
+    Ticker cal_tick;
+    Ticker save_tick;
+    SDBlockDevice *sd; // mosi, miso, sclk, cs
+    FATFileSystem *fs;
     FILE* fd;
+    /** @brief: function calculate energy.
+     */
     void EnergyCal();
+    /** @brief: function save energy into sd card.
+     */
+    void EnergySave();
 public:
    /** constructor
     *
@@ -41,8 +50,24 @@ public:
     *  @param cs - cs pin connect to sd card socket
     */
     EnergyStorage (PinName mosi, PinName miso, PinName sclk, PinName cs);
+    /** @brief: initialization object.
+     */
     void Init();
+    /** @brief: Getter Energy value to display on lcd
+     *  @return: energy_value.
+     */
     float32_t GetEnergy();
-
+    /** @brief: method for power on self test
+     *  @return: if pass the test, return true, else return false.
+     */
+    bool PowerOnSelfTest();
+    /** @brief: updating power measurements in real time for energy measurements.
+     *  @param: value - the power value measure by ina219
+     */
+    void UpdatePower(float32_t value);
+    /** @brief: verify/read the latest stored value.
+     *  @return: true - read successfully, else return false.
+     */
+    bool ReloadEnergy();
 };
 #endif /*LIB_ENERGYSTORAGE_ENERGYSTORAGE_H_*/
