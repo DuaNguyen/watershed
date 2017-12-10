@@ -5,7 +5,7 @@
  * time update, display content on screen, press button to go next screen, reSet timer.
  * TODO: long description
  * @date     Oct. 2017
- * @date modified 2017/10/13
+ * @date modified 2017/11/29
  * @version 1.0.0
  * Copyright(C) 2017
  * All rights reserved.
@@ -58,11 +58,13 @@
 #include <Button.h>
 #include <EventHandling.h>
 #include <EnergyStorage.h>
+#include <PowerOnSelfTest.h>
+#include <MCP23008.hpp>
 #ifndef UNIT_TEST
 #define SHUNT_RES_VALUE 0.016
 #define MAX_CURRENT_VALUE 3.2
 #define MAX_VOLTAGE_VALUE 16
-
+#define TEST_MCP_OUTPUT_VALUE 0xF5
 /*initialization lcd object*/
 I2CPreInit i2c_object(I2C_SDA, I2C_SCL);
 LCDController lcdcontroller(i2c_object);
@@ -83,7 +85,19 @@ RTC_Timer rtc_timer;
 /*initialization energy storage object*/
 EnergyStorage energy_storage(SDIO_MOSI, SDIO_MISO, SDIO_SCK, SDIO_CS);
 DigitalOut led(PB_5);
+MCP23008 expander(I2C_SDA, I2C_SCL, 0);
+PowerOnSelfTest POST;
+DigitalOut led(PB_4);
 int main() {
+    lcdcontroller.PostDisplay(POST.POST_INA219(battery_measurement.PowerOnSelfTest()));
+    expander.set_output_pins(expander.Pin_All);
+    expander.write_outputs(TEST_MCP_OUTPUT_VALUE);
+    lcdcontroller.PostDisplay(POST.POST_IOExpander(TEST_MCP_OUTPUT_VALUE == expander.read_outputs()));
+    while (false == POST.GetResult()) {
+        led = !led;
+        wait(0.5);
+    }
+    wait(0.5);
     /*Display logo watershed on screen*/
     lcdcontroller.ShowLogo();
     /*calibrate ina219 with Shunt resistor value, max current value, max voltage value*/
