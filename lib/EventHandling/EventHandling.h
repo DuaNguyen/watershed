@@ -74,5 +74,4 @@ class EventHandling {
  */
     void InverterTurnOnTrigger(bool trigger);
 };
-
 #endif  // LIB_EVENTHANDLING_EVENTHANDLING_H_

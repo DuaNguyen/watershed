@@ -87,19 +87,21 @@ void MCP23008::acknowledge_interrupt ( uint8_t &pin, uint8_t &values ) {
 
 uint8_t MCP23008::read_register ( uint8_t reg ) {
     char data[] = {reg};
-    if ( 0 != i2c.write ( i2c_address, data, 1 ) )
-        throw "MCP23008::read_register: Missing ACK for write\n";
-
-    if ( 0 != i2c.read ( i2c_address, data, 1 ) )
-        throw "MCP23008:read_register: Missing ACK for read\n";
+    if ( 0 != i2c.write ( i2c_address, data, 1 ) ) {
+        // donothing (Missing ACK for write)
+    }
+    if ( 0 != i2c.read ( i2c_address, data, 1 ) ) {
+        // donothing (Missing ACK for read)
+    }
 
     return data[0];
 }
 
 void MCP23008::write_register ( uint8_t reg, uint8_t value ) {
     char data[] = {reg, value};
-    if ( 0 != i2c.write ( i2c_address, data, 2 ) )
-        throw "MCP23008::write_register: Missing ACK for write\n";
+    if ( 0 != i2c.write ( i2c_address, data, 2 ) ) {
+        // donothing (Missing ACK for write)
+    }
 }
 
 void MCP23008::write_mask ( uint8_t reg, uint8_t mask, bool value ) {

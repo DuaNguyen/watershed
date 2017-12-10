@@ -87,14 +87,15 @@ EnergyStorage energy_storage(SDIO_MOSI, SDIO_MISO, SDIO_SCK, SDIO_CS);
 DigitalOut led(PB_5);
 MCP23008 expander(I2C_SDA, I2C_SCL, 0);
 PowerOnSelfTest POST;
-DigitalOut led(PB_4);
+DigitalOut led_error(PB_4);
 int main() {
+    led_error = 1;
     lcdcontroller.PostDisplay(POST.POST_INA219(battery_measurement.PowerOnSelfTest()));
     expander.set_output_pins(expander.Pin_All);
     expander.write_outputs(TEST_MCP_OUTPUT_VALUE);
     lcdcontroller.PostDisplay(POST.POST_IOExpander(TEST_MCP_OUTPUT_VALUE == expander.read_outputs()));
     while (false == POST.GetResult()) {
-        led = !led;
+        led_error = !led_error;
         wait(0.5);
     }
     wait(0.5);
