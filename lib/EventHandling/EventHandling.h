@@ -11,7 +11,7 @@
  *****************************************************************************/
 #ifndef LIB_EVENTHANDLING_EVENTHANDLING_H_
 #define LIB_EVENTHANDLING_EVENTHANDLING_H_
-#include "mbed.h"
+#include <mbed.h>
 #define TIMEOUT_PERIOD 15
 /** Class: EventHandling
  *  A class handles all actor of system
@@ -21,7 +21,7 @@
  * @endcode
  */
 class EventHandling {
-private:
+ private:
     int menu_index;            /**< screen selected */
     bool timer_is_on;          /**< true is turn on timer, false is turn of timer */
     bool timer_reset;          /**< timer will be reset if this varible is true */
@@ -30,7 +30,8 @@ private:
 /** @brief: This function will be call when time out
  */
     void TimeoutCallback();
-public:
+
+ public:
 /************************************
  * Method:  EventHandling::EventHandling
  * @brief: EventHandling constructor
@@ -72,6 +73,6 @@ public:
  *  @param: trigger - input actor turn on/off inverter.
  */
     void InverterTurnOnTrigger(bool trigger);
+};
 
-  };
- #endif /*LIB_EVENTHANDLING_EVENTHANDLING_H_*/
+#endif  // LIB_EVENTHANDLING_EVENTHANDLING_H_

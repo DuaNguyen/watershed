@@ -82,6 +82,7 @@ EventHandling event_handling;
 RTC_Timer rtc_timer;
 /*initialization energy storage object*/
 EnergyStorage energy_storage(SDIO_MOSI, SDIO_MISO, SDIO_SCK, SDIO_CS);
+DigitalOut led(PB_5);
 int main() {
     /*Display logo watershed on screen*/
     lcdcontroller.ShowLogo();
@@ -123,7 +124,7 @@ int main() {
         lcdcontroller.SetTime(rtc_timer.GetHour(), rtc_timer.GetMinute(), rtc_timer.GetSecond());
         /*selecting screen to display*/
         lcdcontroller.UpdateScreen(event_handling.GetMenuIndex());
-
+        led = !led;
     }
 }
 #endif /*UNIT_TEST*/

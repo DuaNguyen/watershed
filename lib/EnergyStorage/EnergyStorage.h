@@ -11,7 +11,7 @@
  *****************************************************************************/
 #ifndef LIB_ENERGYSTORAGE_ENERGYSTORAGE_H_
 #define LIB_ENERGYSTORAGE_ENERGYSTORAGE_H_
-#include "mbed.h"
+#include <mbed.h>
 #include "FATFileSystem.h"
 #include "SDBlockDevice.h"
 #define ENERGY_STORAGE_PERIOD 1
@@ -26,13 +26,13 @@
  * @endcode
  */
 class EnergyStorage {
-protected:
+ protected:
     float32_t energy_value; /*energy in Wh*/
     float32_t power_value;  /*power in W*/
     bool err_flag;
     Ticker cal_tick;
     Ticker save_tick;
-    SDBlockDevice *sd; // mosi, miso, sclk, cs
+    SDBlockDevice *sd;  // mosi, miso, sclk, cs
     FATFileSystem *fs;
     FILE* fd;
     /** @brief: function calculate energy.
@@ -41,7 +41,8 @@ protected:
     /** @brief: function save energy into sd card.
      */
     void EnergySave();
-public:
+
+ public:
    /** constructor
     *
     *  @param mosi - mosi pin connect to sd card socket
@@ -49,7 +50,7 @@ public:
     *  @param sclk - sclk pin connect to sd card socket
     *  @param cs - cs pin connect to sd card socket
     */
-    EnergyStorage (PinName mosi, PinName miso, PinName sclk, PinName cs);
+    EnergyStorage(PinName mosi, PinName miso, PinName sclk, PinName cs);
     /** @brief: initialization object.
      */
     void Init();
@@ -70,4 +71,4 @@ public:
      */
     bool ReloadEnergy();
 };
-#endif /*LIB_ENERGYSTORAGE_ENERGYSTORAGE_H_*/
+#endif  // LIB_ENERGYSTORAGE_ENERGYSTORAGE_H_

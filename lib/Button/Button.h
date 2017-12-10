@@ -11,7 +11,7 @@
  *****************************************************************************/
 #ifndef  LIB_BUTTON_BUTTON_H_
 #define LIB_BUTTON_BUTTON_H_
-#include "mbed.h"
+#include <mbed.h>
 #define BTN_SAMPLING_PERIOD 0.01
 /** Class: Button
  *  A class handles button input procedure, which uses DigitalIn and Ticker
@@ -43,26 +43,28 @@
  * @endcode
  */
 class Button : public DigitalIn {
-private:
+ private:
 /** SampleBTN input and process */
     void SampleBTN();
     Ticker _tick;
-    bool short_press;    /*!< short_press represents that the button has been short pressed.
-                          *   @retval true - button has been short pressed
-                          */
-    bool long_press;    /*!< long_press represents that the button has been long pressed.
-                          *  @retval true - button has been long pressed
-                          */
+    /*!< short_press represents that the button has been short pressed.
+     *   @retval true - button has been short pressed
+     */
+    bool short_press;
+    /*!< long_press represents that the button has been long pressed.
+     *  @retval true - button has been long pressed
+     */
+    bool long_press;
     int button_last_state;
     int count;
     int button_curr_state;
 
-public:
+ public:
 /** constructor
  *
  *  @param pin - button pin number (DigitalIn), the pin is PullUp internally
  */
-    Button(PinName pin);
+    explicit Button(PinName pin);
 /** @brief: Getter short_press
  *  @return: true when button has been short pressed.
  */

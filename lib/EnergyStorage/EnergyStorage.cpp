@@ -17,7 +17,7 @@
  *  @param sclk - sclk pin connect to sd card socket
  *  @param cs - cs pin connect to sd card socket
  */
-EnergyStorage::EnergyStorage (PinName mosi, PinName miso, PinName sclk, PinName cs) {
+EnergyStorage::EnergyStorage(PinName mosi, PinName miso, PinName sclk, PinName cs) {
     sd = new SDBlockDevice (mosi, miso, sclk, cs);
     fs = new FATFileSystem (SD_MOUNT_PATH);
     fs->mount(sd);
@@ -44,7 +44,7 @@ float32_t EnergyStorage::GetEnergy() {
 bool EnergyStorage::PowerOnSelfTest() {
     bool return_value;
     fd = fopen(FULL_LOG_FILE_PATH, "a");
-    if(NULL == fd) {
+    if (NULL == fd) {
         return_value = false;
     } else {
         return_value = true;
@@ -63,13 +63,13 @@ void EnergyStorage::UpdatePower(float32_t value) {
  */
 bool EnergyStorage::ReloadEnergy() {
     fd = fopen(FULL_LOG_FILE_PATH, "r");
-    if(NULL == fd) {
+    if (NULL == fd) {
         fclose(fd);
         return false;
     } else {
           fseek(fd, 0, SEEK_END);
           uint32_t length = ftell(fd);
-          if(length > 25) {
+          if (length > 25) {
           fseek(fd, length - 25, SEEK_SET);
       } else {
           fseek(fd, 0, SEEK_SET);
@@ -90,7 +90,7 @@ void EnergyStorage::EnergyCal() {
  */
 void EnergyStorage::EnergySave() {
     fd = fopen(FULL_LOG_FILE_PATH, "a");
-    if(NULL == fd) {
+    if (NULL == fd) {
         err_flag = true;
         fclose(fd);
     } else {
