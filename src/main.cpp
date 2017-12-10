@@ -48,16 +48,18 @@
   * RTCtimer functionality including count a period time to calculate energy of battery
     and PV
  *****************************************************************************/
+#define MBED_CONF_FILESYSTEM_PRESENT 1
 #include <IOPins.h>
 #include <mbed.h>
+#include <rtos.h>
 #include <LCDController.h>
 #include <INAReader.h>
 #include <RTCTimer.h>
 #include <Button.h>
 #include <EventHandling.h>
+#include <EnergyStorage.h>
 #include <PowerOnSelfTest.h>
 #include <MCP23008.hpp>
-
 #ifndef UNIT_TEST
 #define SHUNT_RES_VALUE 0.016
 #define MAX_CURRENT_VALUE 3.2
@@ -80,6 +82,9 @@ EventHandling event_handling;
 
 /*initialization realtime clock object */
 RTC_Timer rtc_timer;
+/*initialization energy storage object*/
+EnergyStorage energy_storage(SDIO_MOSI, SDIO_MISO, SDIO_SCK, SDIO_CS);
+DigitalOut led(PB_5);
 MCP23008 expander(I2C_SDA, I2C_SCL, 0);
 PowerOnSelfTest POST;
 DigitalOut led(PB_4);
@@ -97,13 +102,18 @@ int main() {
     lcdcontroller.ShowLogo();
     /*calibrate ina219 with Shunt resistor value, max current value, max voltage value*/
     battery_measurement.Calibrate(SHUNT_RES_VALUE, MAX_CURRENT_VALUE, MAX_VOLTAGE_VALUE);
+    /*verify/read the latest energy stored value.*/
+    energy_storage.ReloadEnergy();
     /*Wait for 3 seconds*/
     wait(3);
+    energy_storage.Init();
     while (true) {
         /*Reading values from INA module*/
         battery_measurement.Scan();
         /*updating realtime clock*/
         rtc_timer.Update();
+        /*updating real power for energy calculation*/
+        energy_storage.UpdatePower(battery_measurement.GetPower()/1000);
         /*Scan triggers*/
         event_handling.SwitchMenuTrigger(selecting.GetShortPress());
         event_handling.TimerIsOnTrigger(setting.GetShortPress());
@@ -124,9 +134,11 @@ int main() {
         lcdcontroller.SetBattVolt(battery_measurement.GetVolt());
         lcdcontroller.SetBattCurr(battery_measurement.GetCurr());
         lcdcontroller.SetBattPower(battery_measurement.GetPower());
+        lcdcontroller.SetBattEnergy(energy_storage.GetEnergy());
         lcdcontroller.SetTime(rtc_timer.GetHour(), rtc_timer.GetMinute(), rtc_timer.GetSecond());
         /*selecting screen to display*/
         lcdcontroller.UpdateScreen(event_handling.GetMenuIndex());
+        led = !led;
     }
 }
 #endif /*UNIT_TEST*/

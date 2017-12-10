@@ -3,7 +3,7 @@
 #PATH := /usr/local/bin:$(PATH)
 
 #add all files
-SOURCES = $(wildcard src/*) $(wildcard lib/INA/*) $(wildcard lib/IO/*) $(wildcard lib/Keyboard/*) $(wildcard lib/LCD/*) $(wildcard lib/RTC/*) $(wildcard test/*)
+SOURCES = $(wildcard src/*) $(wildcard lib/INA/*) $(wildcard lib/IO/*) $(wildcard lib/Keyboard/*) $(wildcard lib/LCD/*) $(wildcard lib/RTC/*) $(wildcard test/*) $(wildcard lib/EnergyStorage/*) $(wildcard lib/EventHandling/*) $(wildcard lib/Button/*)
 
 
 

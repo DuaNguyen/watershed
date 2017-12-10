@@ -10,7 +10,7 @@
  *
  *****************************************************************************/
 #include "Button.h"
-#include "mbed.h"
+#include <mbed.h>
 
 // constructor
 /** Create a Button object connected to a DigtalIn pin
@@ -28,7 +28,6 @@ Button::Button(PinName pin) : DigitalIn(pin) {
 // private function
 /** SampleBTN input and process */
 void Button::SampleBTN() {
-
     button_last_state = button_curr_state;
     button_curr_state = read();
     if ((0 == button_curr_state)&&(0 == button_last_state)) {
@@ -37,7 +36,7 @@ void Button::SampleBTN() {
         /*do nothing*/
     }
     if ((1 == button_curr_state)&&(0 == button_last_state)) {
-        if(count < 150) {
+        if (count < 150) {
             short_press = true;
         } else {
             long_press = true;
@@ -83,7 +82,7 @@ bool Button::GetLongPress() {
 ***********************************/
 bool Button::GetButtonState() {
     bool return_value;
-    if(1 == read()) {
+    if (1 == read()) {
         return_value = false;
     } else {
         return_value = true;
