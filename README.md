@@ -2,6 +2,8 @@ Watershed
 --------------
 This repository contains source code for Watershed embedded project using STM Board.
 
+Bootloader via SD card source: https://github.com/DuaNguyen/Bootloader-via-SD-card
+
 System diagram
 --------------
 ![system diagram](https://raw.githubusercontent.com/DuaNguyen/watershed/master/system_diagram.png)
